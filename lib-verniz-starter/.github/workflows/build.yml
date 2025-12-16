@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build Packages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Packages
+        run: yarn build
+

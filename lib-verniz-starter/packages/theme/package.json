@@ -1,0 +1,42 @@
+{
+  "name": "@verniz/theme",
+  "version": "0.0.1",
+  "description": "Design tokens and theme for Verniz component library",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./globals.css": "./src/globals.css"
+  },
+  "files": [
+    "dist/**",
+    "src/globals.css",
+    "tailwind.config.js"
+  ],
+  "sideEffects": [
+    "./src/globals.css"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}
+
