@@ -189,8 +189,8 @@ graph TD
 
 ```mermaid
 graph TD
-    A[@verniz/button: patch] --> B[Atualiza versão]
-    B --> C[@verniz/utils: patch]
+    A["@verniz/button: patch"] --> B[Atualiza versão]
+    B --> C["@verniz/utils: patch"]
     C --> D[Dependência interna atualizada]
     D --> E[Versões coordenadas]
 ```
