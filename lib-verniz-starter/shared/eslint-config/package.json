@@ -1,0 +1,17 @@
+{
+  "name": "@verniz/eslint-config",
+  "version": "0.0.1",
+  "description": "Shared ESLint configurations for Verniz",
+  "main": "index.js",
+  "files": [
+    "base.js",
+    "react.js"
+  ],
+  "dependencies": {
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "private": true
+}
+

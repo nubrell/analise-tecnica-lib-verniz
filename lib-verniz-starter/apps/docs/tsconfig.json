@@ -1,0 +1,13 @@
+{
+  "extends": "@verniz/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@verniz/utils": ["../../packages/utils/src"],
+      "@verniz/theme": ["../../packages/theme/src"]
+    }
+  },
+  "include": [".storybook/**/*", "src/**/*"],
+  "exclude": ["node_modules", "storybook-static"]
+}
+
