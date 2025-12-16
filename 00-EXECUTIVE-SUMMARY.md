@@ -16,23 +16,24 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 
 ### Decisões Principais
 
-| Categoria | Tecnologia Escolhida | Alternativas Consideradas |
-|-----------|---------------------|---------------------------|
-| **Monorepo** | Turborepo + Yarn Workspaces | Polyrepo, Nx, Lerna |
-| **Build** | TSUP | Rollup, Webpack, Vite, ESBuild |
-| **Versionamento** | Changesets | Lerna, Nx, Manual, Semantic Release |
-| **Templates** | Hygen | Plop, Yeoman, CLI Custom |
-| **Documentação** | Storybook | Styleguidist, Docz, Ladle |
-| **Testes** | Vitest | Jest, Mocha, Ava |
-| **Estilos** | Tailwind CSS | Panda CSS, styled-components |
-| **Componentes Base** | shadcn/ui | Material-UI, Chakra UI, Ant Design |
-| **CI/CD** | GitHub Actions | GitLab CI, CircleCI, Jenkins |
+| Categoria            | Tecnologia Escolhida        | Alternativas Consideradas           |
+| -------------------- | --------------------------- | ----------------------------------- |
+| **Monorepo**         | Turborepo + Yarn Workspaces | Polyrepo, Nx, Lerna                 |
+| **Build**            | TSUP                        | Rollup, Webpack, Vite, ESBuild      |
+| **Versionamento**    | Changesets                  | Lerna, Nx, Manual, Semantic Release |
+| **Templates**        | Hygen                       | Plop, Yeoman, CLI Custom            |
+| **Documentação**     | Storybook                   | Styleguidist, Docz, Ladle           |
+| **Testes**           | Vitest                      | Jest, Mocha, Ava                    |
+| **Estilos**          | Tailwind CSS                | Panda CSS, styled-components        |
+| **Componentes Base** | shadcn/ui                   | Material-UI, Chakra UI, Ant Design  |
+| **CI/CD**            | GitHub Actions              | GitLab CI, CircleCI, Jenkins        |
 
 ## ✅ Justificativas Principais
 
 ### 1. Monorepo com Turborepo
 
 **Por quê?**
+
 - ✅ Organização clara de múltiplos pacotes
 - ✅ Compartilhamento de código facilitado
 - ✅ Builds otimizados com cache inteligente
@@ -44,6 +45,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 2. TSUP para Build
 
 **Por quê?**
+
 - ✅ Simplicidade máxima (zero config)
 - ✅ Performance excepcional (ESBuild)
 - ✅ TypeScript nativo
@@ -55,6 +57,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 3. Changesets para Versionamento
 
 **Por quê?**
+
 - ✅ Simplicidade e clareza
 - ✅ Versionamento inteligente
 - ✅ CHANGELOG automático
@@ -66,6 +69,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 4. Hygen para Templates
 
 **Por quê?**
+
 - ✅ Simplicidade extrema
 - ✅ Templates flexíveis (EJS)
 - ✅ Geração rápida (2-5s)
@@ -77,6 +81,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 5. Storybook para Documentação
 
 **Por quê?**
+
 - ✅ Documentação viva e interativa
 - ✅ Desenvolvimento isolado
 - ✅ Visual testing
@@ -88,6 +93,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 6. Vitest para Testes
 
 **Por quê?**
+
 - ✅ Performance excepcional (4.5x mais rápido)
 - ✅ TypeScript nativo
 - ✅ Watch mode instantâneo
@@ -99,6 +105,7 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 ### 7. Tailwind CSS + shadcn/ui
 
 **Por quê?**
+
 - ✅ Utility-first (produtividade)
 - ✅ shadcn/ui: componentes copiáveis e customizáveis
 - ✅ Zero runtime CSS
@@ -111,39 +118,39 @@ Este documento apresenta a análise técnica completa e as recomendações para 
 
 ### Monorepo
 
-| Aspecto | Turborepo | Polyrepo | Nx |
-|---------|-----------|---------|-----|
-| Simplicidade | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Performance | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
-| Manutenção | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
-| **Recomendação** | ✅ **Escolhido** | ❌ | ⚠️ Overkill |
+| Aspecto          | Turborepo        | Polyrepo | Nx          |
+| ---------------- | ---------------- | -------- | ----------- |
+| Simplicidade     | ⭐⭐⭐⭐⭐       | ⭐⭐⭐   | ⭐⭐        |
+| Performance      | ⭐⭐⭐⭐⭐       | ⭐⭐     | ⭐⭐⭐⭐    |
+| Manutenção       | ⭐⭐⭐⭐⭐       | ⭐⭐     | ⭐⭐⭐      |
+| **Recomendação** | ✅ **Escolhido** | ❌       | ⚠️ Overkill |
 
 ### Build
 
-| Aspecto | TSUP | Rollup | Webpack |
-|---------|------|--------|---------|
-| Velocidade | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Simplicidade | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| TypeScript | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌ |
+| Aspecto          | TSUP             | Rollup         | Webpack |
+| ---------------- | ---------------- | -------------- | ------- |
+| Velocidade       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐    |
+| Simplicidade     | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐    |
+| TypeScript       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐⭐  |
+| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌      |
 
 ### Versionamento
 
-| Aspecto | Changesets | Lerna | Manual |
-|---------|-----------|-------|--------|
-| Simplicidade | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Automação | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐ |
-| Manutenção | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌ |
+| Aspecto          | Changesets       | Lerna          | Manual     |
+| ---------------- | ---------------- | -------------- | ---------- |
+| Simplicidade     | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐⭐⭐⭐ |
+| Automação        | ⭐⭐⭐⭐⭐       | ⭐⭐⭐⭐       | ⭐         |
+| Manutenção       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐       |
+| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌         |
 
 ### Testes
 
-| Aspecto | Vitest | Jest | Mocha |
-|---------|--------|------|-------|
-| Velocidade | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| TypeScript | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Watch Mode | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌ |
+| Aspecto          | Vitest           | Jest           | Mocha  |
+| ---------------- | ---------------- | -------------- | ------ |
+| Velocidade       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐⭐ |
+| TypeScript       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐   |
+| Watch Mode       | ⭐⭐⭐⭐⭐       | ⭐⭐⭐         | ⭐⭐⭐ |
+| **Recomendação** | ✅ **Escolhido** | ⚠️ Alternativa | ❌     |
 
 ## 🎯 Arquitetura Proposta
 
@@ -188,12 +195,12 @@ lib-verniz/
 
 ## ⚠️ Riscos e Mitigações
 
-| Risco | Probabilidade | Impacto | Mitigação |
-|-------|--------------|---------|-----------|
-| Curva de aprendizado | Média | Médio | Documentação completa + Treinamento |
-| Dependências quebradas | Baixa | Alto | Versionamento fixo + Testes |
-| Performance degradação | Baixa | Médio | Monitoramento + Benchmarks |
-| Ecossistema imaturo | Baixa | Baixo | Escolha de tecnologias estáveis |
+| Risco                  | Probabilidade | Impacto | Mitigação                           |
+| ---------------------- | ------------- | ------- | ----------------------------------- |
+| Curva de aprendizado   | Média         | Médio   | Documentação completa + Treinamento |
+| Dependências quebradas | Baixa         | Alto    | Versionamento fixo + Testes         |
+| Performance degradação | Baixa         | Médio   | Monitoramento + Benchmarks          |
+| Ecossistema imaturo    | Baixa         | Baixo   | Escolha de tecnologias estáveis     |
 
 ## 🚀 Próximos Passos
 
@@ -222,6 +229,5 @@ Para análises detalhadas de cada tecnologia, consulte:
 ---
 
 **Versão**: 1.0.0  
-**Data**: 2024  
-**Autor**: Equipe de Arquitetura
-
+**Data**: 16/12/2025  
+**Autor**: Wellington e Bruno

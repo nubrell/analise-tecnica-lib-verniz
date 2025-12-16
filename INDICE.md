@@ -94,5 +94,4 @@
 
 ---
 
-**Última atualização**: 2024
-
+**Última atualização**: 16/12/2025
