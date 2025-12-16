@@ -71,11 +71,11 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    A[@verniz/button] --> B[@verniz/utils]
-    A --> C[@verniz/theme]
-    D[@verniz/input] --> B
+    A["@verniz/button"] --> B["@verniz/utils"]
+    A --> C["@verniz/theme"]
+    D["@verniz/input"] --> B
     D --> C
-    E[@verniz/select] --> B
+    E["@verniz/select"] --> B
     E --> C
     
     F[apps/docs] --> A
@@ -182,9 +182,9 @@ graph TB
     subgraph Component[Componente shadcn]
         A[Button.tsx] --> B[Button.styles.ts]
         A --> C[cn utility]
-        C --> D[@verniz/utils]
+        C --> D["@verniz/utils"]
         B --> E[Tailwind CSS]
-        E --> F[@verniz/theme]
+        E --> F["@verniz/theme"]
     end
     
     G[Button.spec.tsx] --> A
