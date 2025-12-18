@@ -115,17 +115,45 @@ jobs:
                 if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
                   COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
                   if [ ! -L "node_modules/@nubrell/$COMPONENT_NAME" ]; then
-                    ln -s "../../$dir" "node_modules/@nubrell/$COMPONENT_NAME"
-                    echo "  ✅ Linked $PACKAGE_NAME"
+                    # Usa caminho absoluto para garantir que o link funcione
+                    ABS_DIR="$(cd "$dir" && pwd)"
+                    ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
+                    echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
                   fi
                 fi
               fi
             done
+            
+            # Também verifica pacotes em packages/utils
+            if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
+              PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "packages/utils/package.json" | cut -d'"' -f4)
+              if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
+                COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
+                if [ ! -L "node_modules/@nubrell/$COMPONENT_NAME" ]; then
+                  ABS_DIR="$(cd packages/utils && pwd)"
+                  ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
+                  echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
+                fi
+              fi
+            fi
           fi
 
-          # Verifica novamente
+          # Verifica novamente e valida os links
           echo "Final workspace links:"
           ls -la node_modules/@nubrell/ || echo "No @nubrell packages found"
+
+          # Valida que os links apontam para diretórios válidos
+          echo "Validating links..."
+          for link in node_modules/@nubrell/*; do
+            if [ -L "$link" ]; then
+              TARGET=$(readlink -f "$link")
+              if [ -d "$TARGET" ] && [ -f "$TARGET/package.json" ]; then
+                echo "  ✅ $(basename $link) -> $TARGET"
+              else
+                echo "  ❌ Broken link: $(basename $link) -> $TARGET"
+              fi
+            fi
+          done
 
       - name: Update package version from tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -159,43 +187,35 @@ jobs:
           # Adiciona node_modules/.bin ao PATH
           export PATH="$PWD/node_modules/.bin:$PATH"
 
-          # Para o nav, precisamos garantir que os workspace links estejam disponíveis
+          # Verifica se os workspace links estão disponíveis (especialmente para pacotes com dependências internas)
+          echo "Verifying workspace dependencies..."
+          if [ -d "node_modules/@nubrell" ]; then
+            echo "✅ Root workspace links available:"
+            ls -la node_modules/@nubrell/ | head -20
+          else
+            echo "⚠️  No @nubrell packages found in root node_modules"
+            exit 1
+          fi
+
+          # Para pacotes com dependências internas (como nav), verifica se as dependências estão linkadas
           if [[ "$PACKAGE_NAME" == "@nubrell/nav" ]]; then
-            echo "Setting up workspace links for nav dependencies..."
-            cd "$PACKAGE_PATH"
-            
-            # Cria node_modules se não existir
-            mkdir -p node_modules/@nubrell
-            
-            # Lista de dependências do nav
+            echo "Verifying nav dependencies..."
             DEPS=("badge" "collapsible" "dropdown-menu")
+            MISSING_DEPS=()
             
             for dep in "${DEPS[@]}"; do
-              # Verifica se o link já existe na raiz
-              if [ -L "../../node_modules/@nubrell/$dep" ]; then
-                echo "  ✅ Found workspace link for @nubrell/$dep in root"
-                # Cria link local apontando para o link da raiz
-                if [ ! -L "node_modules/@nubrell/$dep" ]; then
-                  ln -s "../../../node_modules/@nubrell/$dep" "node_modules/@nubrell/$dep"
-                  echo "  ✅ Created local link for @nubrell/$dep"
-                fi
-              # Se não existe link, cria direto do source
-              elif [ -d "../../components/$dep" ]; then
-                echo "  ✅ Found source for @nubrell/$dep, creating link"
-                if [ ! -L "node_modules/@nubrell/$dep" ]; then
-                  ln -s "../../../components/$dep" "node_modules/@nubrell/$dep"
-                  echo "  ✅ Created link from source for @nubrell/$dep"
-                fi
+              if [ -L "node_modules/@nubrell/$dep" ] || [ -d "node_modules/@nubrell/$dep" ]; then
+                echo "  ✅ @nubrell/$dep is available"
               else
-                echo "  ⚠️  Could not find @nubrell/$dep"
+                echo "  ❌ @nubrell/$dep is missing"
+                MISSING_DEPS+=("$dep")
               fi
             done
             
-            # Verifica os links criados
-            echo "Local links created:"
-            ls -la node_modules/@nubrell/ || echo "No links found"
-            
-            cd - > /dev/null
+            if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
+              echo "❌ Missing dependencies: ${MISSING_DEPS[*]}"
+              exit 1
+            fi
           fi
 
           # Faz build direto no diretório
