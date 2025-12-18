@@ -51,15 +51,16 @@ jobs:
             fi
             
             echo "Building $package_name..."
-            cd "$package_dir"
             
-            # Instala dependências do pacote (incluindo devDependencies)
-            yarn install --frozen-lockfile || yarn install
+            # Usa yarn workspace para garantir que as dependências estão instaladas
+            yarn workspace "$package_name" install --ignore-scripts || true
             
-            # Faz o build
-            yarn build || npx tsup
-            
-            cd - > /dev/null
+            # Faz o build usando yarn workspace
+            yarn workspace "$package_name" build || (
+              cd "$package_dir"
+              yarn build || npx tsup
+              cd - > /dev/null
+            )
           }
           
           # Build utils
