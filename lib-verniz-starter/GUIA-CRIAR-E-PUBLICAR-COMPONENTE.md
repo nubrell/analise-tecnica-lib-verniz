@@ -77,7 +77,32 @@ git push origin main
 
 ### 5️⃣ Publicar o Componente
 
-Para publicar automaticamente, você precisa criar uma **tag Git** seguindo o padrão:
+#### Opção Rápida (Recomendada) 🚀
+
+Use o script automatizado que pega a versão do `package.json` automaticamente:
+
+```bash
+# Da raiz do repositório (analise-tecnica-lib-verniz)
+cd lib-verniz-starter
+yarn publish:component meu-componente
+```
+
+O script irá:
+- ✅ Detectar a versão automaticamente do `package.json`
+- ✅ Criar a tag no formato correto: `nubrell/meu-componente@0.0.1`
+- ✅ Fazer push da tag automaticamente
+- ✅ Acionar o workflow no GitHub Actions
+
+**Exemplo:**
+```bash
+yarn publish:component menu
+# Cria tag: nubrell/menu@0.0.1 (versão pega do package.json)
+# Faz push e aciona workflow automaticamente
+```
+
+#### Opção Manual
+
+Se preferir fazer manualmente, você precisa criar uma **tag Git** seguindo o padrão:
 
 ```
 nubrell/nome-do-componente@versao
@@ -88,8 +113,6 @@ nubrell/nome-do-componente@versao
 - Componente: `meu-componente`
 - Versão: `0.0.1`
 - Tag: `nubrell/meu-componente@0.0.1`
-
-#### Criar a tag e publicar:
 
 ```bash
 # 1. Certifique-se de estar na raiz do repositório
