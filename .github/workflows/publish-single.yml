@@ -59,9 +59,24 @@ jobs:
             echo "component_name=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           elif [ -n "${{ github.event.inputs.package_path }}" ]; then
             # Manual dispatch with package_path
-            PACKAGE_PATH="${{ github.event.inputs.package_path }}"
-            PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "$PACKAGE_PATH/package.json" | cut -d'"' -f4)
-            VERSION=$(grep -o '"version": "[^"]*"' "$PACKAGE_PATH/package.json" | cut -d'"' -f4)
+            # Remove 'lib-verniz-starter/' prefix if present
+            INPUT_PATH="${{ github.event.inputs.package_path }}"
+            if [[ "$INPUT_PATH" == lib-verniz-starter/* ]]; then
+              PACKAGE_PATH="${INPUT_PATH#lib-verniz-starter/}"
+            else
+              PACKAGE_PATH="$INPUT_PATH"
+            fi
+            
+            # Read package.json (relative to lib-verniz-starter)
+            FULL_PATH="lib-verniz-starter/$PACKAGE_PATH"
+            if [ ! -f "$FULL_PATH/package.json" ]; then
+              echo "❌ Error: package.json not found at $FULL_PATH/package.json"
+              exit 1
+            fi
+            
+            PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "$FULL_PATH/package.json" | cut -d'"' -f4)
+            VERSION=$(grep -o '"version": "[^"]*"' "$FULL_PATH/package.json" | cut -d'"' -f4)
+            
             echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
             echo "package_path=$PACKAGE_PATH" >> $GITHUB_OUTPUT
             echo "version=$VERSION" >> $GITHUB_OUTPUT
