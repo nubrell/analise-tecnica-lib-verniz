@@ -1,7 +1,7 @@
 {
-  "name": "@str-well/utils",
+  "name": "@nubrell/utils",
   "version": "0.0.1",
-  "description": "Utility functions for Verniz component library",
+  "description": "Utility functions",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/str-well/analise-tecnica-lib-verniz.git"
+    "url": "https://github.com/nubrell/analise-tecnica-lib-verniz.git"
   },
   "keywords": [
     "utils",
@@ -35,7 +35,7 @@
     "classnames",
     "tailwind"
   ],
-  "author": "str-well",
+  "author": "nubrell",
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
