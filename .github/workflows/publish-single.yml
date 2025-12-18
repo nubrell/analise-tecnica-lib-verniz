@@ -3,7 +3,7 @@ name: Publish Single Package
 on:
   push:
     tags:
-      - '@nubrell/*@*'  # Publica quando uma tag de componente é criada (ex: @nubrell/button@0.0.1)
+      - 'nubrell/*@*'  # Publica quando uma tag de componente é criada (ex: nubrell/button@0.0.1)
   workflow_dispatch:
     inputs:
       package_path:
@@ -39,14 +39,12 @@ jobs:
       - name: Extract package info from tag
         id: package-info
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/@nubrell/*@* ]]; then
-            # Tag format: @nubrell/button@0.0.1
+          if [[ "${{ github.ref }}" == refs/tags/nubrell/*@* ]]; then
+            # Tag format: nubrell/button@0.0.1
             TAG_NAME="${GITHUB_REF#refs/tags/}"
-            PACKAGE_NAME=$(echo "$TAG_NAME" | cut -d'@' -f1)
+            COMPONENT_NAME=$(echo "$TAG_NAME" | cut -d'/' -f2 | cut -d'@' -f1)
             VERSION=$(echo "$TAG_NAME" | cut -d'@' -f2)
-            
-            # Remove @nubrell/ prefix to get component name
-            COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
+            PACKAGE_NAME="@nubrell/$COMPONENT_NAME"
             
             # Determine package path
             if [ "$COMPONENT_NAME" == "utils" ]; then
