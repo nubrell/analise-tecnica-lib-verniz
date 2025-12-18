@@ -1,5 +1,5 @@
 {
-  "name": "@verniz/utils",
+  "name": "@str-well/utils",
   "version": "0.0.1",
   "description": "Utility functions for Verniz component library",
   "main": "./dist/index.cjs",
@@ -20,6 +20,23 @@
   "files": [
     "dist/**"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/str-well/analise-tecnica-lib-verniz.git"
+  },
+  "keywords": [
+    "utils",
+    "utilities",
+    "cn",
+    "classnames",
+    "tailwind"
+  ],
+  "author": "str-well",
+  "license": "MIT",
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
@@ -28,11 +45,12 @@
   },
   "dependencies": {
     "clsx": "^2.1.0",
+    "minimatch": "^10.1.1",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@types/minimatch": "^6.0.0",
     "tsup": "^8.0.1",
     "typescript": "^5.4.5"
   }
 }
-
