@@ -79,13 +79,13 @@ git push origin main
 Para publicar automaticamente, você precisa criar uma **tag Git** seguindo o padrão:
 
 ```
-@nubrell/nome-do-componente@versao
+nubrell/nome-do-componente@versao
 ```
 
 **Exemplo:**
 - Componente: `meu-componente`
 - Versão: `0.0.1`
-- Tag: `@nubrell/meu-componente@0.0.1`
+- Tag: `nubrell/meu-componente@0.0.1`
 
 #### Criar a tag e publicar:
 
@@ -94,10 +94,10 @@ Para publicar automaticamente, você precisa criar uma **tag Git** seguindo o pa
 cd /caminho/para/analise-tecnica-lib-verniz
 
 # 2. Criar a tag (substitua 'meu-componente' e '0.0.1' pelos valores corretos)
-git tag @nubrell/meu-componente@0.0.1
+git tag nubrell/meu-componente@0.0.1
 
 # 3. Fazer push da tag (isso aciona o workflow automaticamente!)
-git push origin @nubrell/meu-componente@0.0.1
+git push origin nubrell/meu-componente@0.0.1
 ```
 
 ⚠️ **Importante:** 
@@ -144,8 +144,8 @@ git commit -m "feat: add alert component"
 git push origin main
 
 # 4. Publicar versão 0.0.1
-git tag @nubrell/alert@0.0.1
-git push origin @nubrell/alert@0.0.1
+git tag nubrell/alert@0.0.1
+git push origin nubrell/alert@0.0.1
 ```
 
 Pronto! O componente será publicado automaticamente. 🎉
@@ -157,8 +157,8 @@ Pronto! O componente será publicado automaticamente. 🎉
 Para publicar uma nova versão (ex: 0.0.2, 0.1.0, 1.0.0):
 
 ```bash
-git tag @nubrell/alert@0.0.2
-git push origin @nubrell/alert@0.0.2
+git tag nubrell/alert@0.0.2
+git push origin nubrell/alert@0.0.2
 ```
 
 ---
@@ -178,8 +178,8 @@ Se você preferir publicar manualmente via GitHub Actions UI:
 
 ### Tag não acionou o workflow?
 
-- Verifique se a tag segue o padrão exato: `@nubrell/nome@versao`
-- Certifique-se de ter feito push da tag: `git push origin @nubrell/nome@versao`
+- Verifique se a tag segue o padrão exato: `nubrell/nome@versao`
+- Certifique-se de ter feito push da tag: `git push origin nubrell/nome@versao`
 
 ### Erro "package already published"?
 
