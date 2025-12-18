@@ -98,6 +98,19 @@ jobs:
           yarn install --frozen-lockfile
           # Garante que todas as devDependencies estão instaladas
           yarn install --production=false
+          
+          # Verifica se os workspace links foram criados
+          echo "Checking workspace links..."
+          ls -la node_modules/@nubrell/ || echo "⚠️  @nubrell packages not found in root node_modules"
+          
+          # Lista os links criados
+          if [ -d "node_modules/@nubrell" ]; then
+            echo "✅ Workspace links found:"
+            ls -la node_modules/@nubrell/
+          fi
+          
+          # Garante que os pacotes estão linkados corretamente
+          yarn install --check-files
 
       - name: Update package version from tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -131,15 +144,35 @@ jobs:
           # Adiciona node_modules/.bin ao PATH
           export PATH="$PWD/node_modules/.bin:$PATH"
           
-          # Usa yarn workspace para fazer o build (usa os workspace links)
-          yarn workspace "$PACKAGE_NAME" build || (
-            # Fallback: tenta fazer build direto no diretório
+          # Para o nav, precisamos garantir que os workspace links estejam disponíveis
+          # Cria links simbólicos se necessário
+          if [[ "$PACKAGE_NAME" == "@nubrell/nav" ]]; then
+            echo "Setting up workspace links for nav dependencies..."
             cd "$PACKAGE_PATH"
-            npx tsup || yarn build
-          )
+            
+            # Cria node_modules se não existir
+            mkdir -p node_modules/@nubrell
+            
+            # Cria links simbólicos para os pacotes dependentes
+            if [ ! -L "node_modules/@nubrell/badge" ] && [ -d "../../../node_modules/@nubrell/badge" ]; then
+              ln -s ../../../../node_modules/@nubrell/badge node_modules/@nubrell/badge
+            fi
+            if [ ! -L "node_modules/@nubrell/collapsible" ] && [ -d "../../../node_modules/@nubrell/collapsible" ]; then
+              ln -s ../../../../node_modules/@nubrell/collapsible node_modules/@nubrell/collapsible
+            fi
+            if [ ! -L "node_modules/@nubrell/dropdown-menu" ] && [ -d "../../../node_modules/@nubrell/dropdown-menu" ]; then
+              ln -s ../../../../node_modules/@nubrell/dropdown-menu node_modules/@nubrell/dropdown-menu
+            fi
+            
+            cd - > /dev/null
+          fi
+          
+          # Tenta fazer build direto no diretório (não usa yarn workspace para evitar problemas)
+          cd "$PACKAGE_PATH"
+          yarn build || npx tsup
 
           # Verifica se o build foi bem-sucedido
-          if [ ! -f "$PACKAGE_PATH/dist/index.cjs" ] && [ ! -f "$PACKAGE_PATH/dist/index.mjs" ]; then
+          if [ ! -f "dist/index.cjs" ] && [ ! -f "dist/index.mjs" ]; then
             echo "❌ Error: Build failed - no output files found"
             exit 1
           fi
