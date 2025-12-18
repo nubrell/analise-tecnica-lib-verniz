@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       package_path:
-        description: 'Caminho do package (ex: packages/components/button)'
+        description: 'Caminho do package relativo a lib-verniz-starter (ex: packages/components/button)'
         required: true
         type: string
 
@@ -31,16 +31,41 @@ jobs:
         working-directory: lib-verniz-starter
         run: yarn install --frozen-lockfile
 
+      - name: Verify Package
+        working-directory: lib-verniz-starter
+        run: |
+          package_dir="${{ github.event.inputs.package_path }}"
+          if [ ! -d "$package_dir" ]; then
+            echo "❌ Error: Directory $package_dir does not exist"
+            exit 1
+          fi
+          
+          if [ ! -f "$package_dir/package.json" ]; then
+            echo "❌ Error: package.json not found in $package_dir"
+            exit 1
+          fi
+          
+          package_name=$(grep -o '"name": "[^"]*"' "$package_dir/package.json" | cut -d'"' -f4)
+          echo "📦 Package name: $package_name"
+          
+          if [[ "$package_name" != @nubrell/* ]]; then
+            echo "❌ Error: Package $package_name is not a @nubrell package"
+            exit 1
+          fi
+
       - name: Build Package
         working-directory: lib-verniz-starter
         run: |
-          cd ${{ github.event.inputs.package_path }}
+          cd "${{ github.event.inputs.package_path }}"
           yarn build
 
       - name: Publish Package
         working-directory: lib-verniz-starter
         run: |
-          cd ${{ github.event.inputs.package_path }}
+          cd "${{ github.event.inputs.package_path }}"
+          package_name=$(grep -o '"name": "[^"]*"' package.json | cut -d'"' -f4)
+          echo "📦 Publishing $package_name..."
           npm publish --access restricted
+          echo "✅ Successfully published $package_name"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
