@@ -72,14 +72,32 @@ jobs:
             
             echo "Building $package_name..."
             
-            # Usa yarn workspace para fazer o build (usa os workspace links locais)
-            # Isso evita tentar baixar do GitHub Packages durante o build
-            yarn workspace "$package_name" build || (
-              # Fallback: tenta fazer build direto no diretório
+            # Para o nav, precisamos garantir que os workspace links estejam disponíveis
+            if [[ "$package_name" == "@nubrell/nav" ]]; then
+              echo "Setting up workspace links for nav dependencies..."
               cd "$package_dir"
-              yarn build || npx tsup
+              
+              # Cria node_modules se não existir
+              mkdir -p node_modules/@nubrell
+              
+              # Cria links simbólicos para os pacotes dependentes
+              if [ ! -L "node_modules/@nubrell/badge" ] && [ -d "../../../node_modules/@nubrell/badge" ]; then
+                ln -s ../../../../node_modules/@nubrell/badge node_modules/@nubrell/badge
+              fi
+              if [ ! -L "node_modules/@nubrell/collapsible" ] && [ -d "../../../node_modules/@nubrell/collapsible" ]; then
+                ln -s ../../../../node_modules/@nubrell/collapsible node_modules/@nubrell/collapsible
+              fi
+              if [ ! -L "node_modules/@nubrell/dropdown-menu" ] && [ -d "../../../node_modules/@nubrell/dropdown-menu" ]; then
+                ln -s ../../../../node_modules/@nubrell/dropdown-menu node_modules/@nubrell/dropdown-menu
+              fi
+              
               cd - > /dev/null
-            )
+            fi
+            
+            # Tenta fazer build direto no diretório
+            cd "$package_dir"
+            yarn build || npx tsup
+            cd - > /dev/null
           }
           
           # Build utils
