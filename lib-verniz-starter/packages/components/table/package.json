@@ -1,6 +1,6 @@
 {
   "name": "@nubrell/table",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Table component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
