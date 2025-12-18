@@ -79,8 +79,16 @@ jobs:
         working-directory: lib-verniz-starter
         run: |
           cd "${{ steps.package-info.outputs.package_path }}"
-          npm version "${{ steps.package-info.outputs.version }}" --no-git-tag-version
-          echo "Updated version to ${{ steps.package-info.outputs.version }}"
+          CURRENT_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
+          TARGET_VERSION="${{ steps.package-info.outputs.version }}"
+          
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
+            npm version "$TARGET_VERSION" --no-git-tag-version
+            echo "✅ Updated version to $TARGET_VERSION"
+          else
+            echo "Version already set to $TARGET_VERSION, skipping update"
+          fi
 
       - name: Build Package
         working-directory: lib-verniz-starter
