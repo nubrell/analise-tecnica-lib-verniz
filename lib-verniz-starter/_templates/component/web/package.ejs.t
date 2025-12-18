@@ -2,7 +2,7 @@
 to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
 ---
 {
-  "name": "@str-well/<%= h.changeCase.paramCase(name) %>",
+  "name": "@nubrell/<%= h.changeCase.paramCase(name) %>",
   "version": "0.0.1",
   "description": "<%= h.changeCase.pascalCase(name) %> component",
   "main": "./dist/index.cjs",
@@ -29,7 +29,7 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/str-well/analise-tecnica-lib-verniz.git"
+    "url": "https://github.com/nubrell/analise-tecnica-lib-verniz.git"
   },
   "keywords": [
     "<%= h.changeCase.paramCase(name) %>",
@@ -37,7 +37,7 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
     "component",
     "ui"
   ],
-  "author": "str-well",
+  "author": "nubrell",
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
