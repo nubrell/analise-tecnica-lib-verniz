@@ -31,7 +31,10 @@ jobs:
 
       - name: Install Dependencies
         working-directory: lib-verniz-starter
-        run: yarn install
+        run: |
+          yarn install --frozen-lockfile
+          # Garante que todas as devDependencies estão instaladas
+          yarn install --production=false
 
       - name: Build @nubrell Packages
         working-directory: lib-verniz-starter
@@ -51,16 +54,12 @@ jobs:
             fi
             
             echo "Building $package_name..."
+            cd "$package_dir"
             
-            # Usa yarn workspace para garantir que as dependências estão instaladas
-            yarn workspace "$package_name" install --ignore-scripts || true
+            # Faz o build (as dependências já foram instaladas na raiz)
+            yarn build || npx tsup
             
-            # Faz o build usando yarn workspace
-            yarn workspace "$package_name" build || (
-              cd "$package_dir"
-              yarn build || npx tsup
-              cd - > /dev/null
-            )
+            cd - > /dev/null
           }
           
           # Build utils
