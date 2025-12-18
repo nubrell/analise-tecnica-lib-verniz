@@ -5,7 +5,11 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: ['src/index.tsx'],
-  dts: true,
+  dts: {
+    compilerOptions: {
+      skipLibCheck: true,
+    },
+  },
   format: ['esm', 'cjs'],
   external: ['react', 'react-dom', 'react/jsx-runtime'],
   sourcemap: true,
