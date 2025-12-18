@@ -56,7 +56,19 @@ jobs:
             echo "Building $package_name..."
             cd "$package_dir"
             
-            # Faz o build (as dependências já foram instaladas na raiz)
+            # Garante que as dependências estão instaladas neste workspace
+            # O yarn workspaces pode não ter instalado as devDependencies aqui
+            if [ -f "package.json" ]; then
+              echo "Installing dependencies for $package_name..."
+              # Cria um link simbólico para node_modules da raiz se não existir
+              if [ ! -d "node_modules" ]; then
+                ln -s ../../node_modules node_modules || true
+              fi
+              # Instala dependências específicas deste pacote se necessário
+              yarn install --check-files || true
+            fi
+            
+            # Faz o build
             yarn build || npx tsup
             
             cd - > /dev/null
