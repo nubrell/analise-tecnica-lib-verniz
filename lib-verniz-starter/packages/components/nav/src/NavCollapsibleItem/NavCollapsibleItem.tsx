@@ -27,7 +27,7 @@ export interface NavCollapsibleItemProps
 const NavCollapsibleItem = React.forwardRef<
   HTMLElement,
   NavCollapsibleItemProps
->(({ item, linkComponent, asChild = false, className, ...props }, ref) => {
+>(({ item, linkComponent, asChild = false, className }, ref) => {
   const { isCollapsed } = useNav();
   const hasActiveChild = item.items.some((child) => child.isActive);
   const [isOpen, setIsOpen] = useState(hasActiveChild);
