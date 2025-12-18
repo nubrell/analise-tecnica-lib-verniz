@@ -41,27 +41,36 @@ jobs:
           # Adiciona node_modules/.bin ao PATH
           export PATH="$PWD/node_modules/.bin:$PATH"
           
+          # Função para fazer build de um pacote
+          build_package() {
+            local package_dir=$1
+            local package_name=$(grep -o '"name": "[^"]*"' "$package_dir/package.json" | cut -d'"' -f4)
+            
+            if [[ "$package_name" != @nubrell/* ]]; then
+              return 0
+            fi
+            
+            echo "Building $package_name..."
+            cd "$package_dir"
+            
+            # Instala dependências do pacote (incluindo devDependencies)
+            yarn install --frozen-lockfile || yarn install
+            
+            # Faz o build
+            yarn build || npx tsup
+            
+            cd - > /dev/null
+          }
+          
           # Build utils
           if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
-            package_name=$(grep -o '"name": "[^"]*"' packages/utils/package.json | cut -d'"' -f4)
-            if [[ "$package_name" == @nubrell/* ]]; then
-              echo "Building $package_name..."
-              cd packages/utils
-              npx tsup || yarn build
-              cd ../..
-            fi
+            build_package "packages/utils"
           fi
           
           # Build todos os componentes
           for dir in packages/components/*/; do
             if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
-              package_name=$(grep -o '"name": "[^"]*"' "$dir/package.json" | cut -d'"' -f4)
-              if [[ "$package_name" == @nubrell/* ]]; then
-                echo "Building $package_name..."
-                cd "$dir"
-                npx tsup || yarn build
-                cd ../../..
-              fi
+              build_package "$dir"
             fi
           done
           
