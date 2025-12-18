@@ -32,9 +32,15 @@ jobs:
       - name: Install Dependencies
         working-directory: lib-verniz-starter
         run: |
-          yarn install --frozen-lockfile
-          # Garante que todas as devDependencies estão instaladas
-          yarn install --production=false
+          # Instala todas as dependências incluindo devDependencies
+          yarn install --frozen-lockfile --production=false
+          
+          # Verifica se os pacotes Radix foram instalados
+          echo "Checking Radix UI packages..."
+          ls -la node_modules/@radix-ui/ || echo "Radix packages not found in root"
+          
+          # Garante que os pacotes estão disponíveis
+          yarn install --check-files
 
       - name: Build @nubrell Packages
         working-directory: lib-verniz-starter
