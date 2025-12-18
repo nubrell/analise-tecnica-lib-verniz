@@ -28,10 +28,18 @@ Crie/edite o arquivo `.npmrc` na raiz do seu monorepo (apenas localmente, no seu
 //npm.pkg.github.com/:_authToken=SEU_TOKEN_AQUI
 ```
 
+**Para a organização `nubrell`:**
+
+```ini
+@nubrell:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=SEU_TOKEN_AQUI
+```
+
 **Substitua:**
 
-- `SUA-ORG` → Seu usuário ou organização do GitHub
 - `SEU_TOKEN_AQUI` → O token que você gerou (com a permissão `write:packages`)
+
+⚠️ **Importante para organizações:** Se você está publicando para uma organização, certifique-se de que seu token tem acesso à organização. Ao criar o token, selecione a organização `nubrell` se solicitado.
 
 **Cada desenvolvedor usa seu próprio token!** Não compartilhe tokens ou faça commit do `.npmrc`.
 
@@ -58,7 +66,9 @@ No `package.json` do seu componente (ex: `packages/components/button/package.jso
 }
 ```
 
-⚠️ **Importante:** O `name` deve começar com `@SUA-ORG/` (exatamente igual ao que você colocou no `.npmrc`)
+⚠️ **Importante:** O `name` deve começar com `@SUA-ORG/` (exatamente igual ao que você colocou no `.npmrc`). 
+
+**Para a organização `nubrell`**, use `@nubrell/nome-do-componente`
 
 ---
 
@@ -103,8 +113,8 @@ Se tudo estiver correto, você verá uma mensagem como:
 
 Você pode verificar se o package foi publicado:
 
-- **No seu perfil:** `https://github.com/SUA-ORG?tab=packages`
-- **No seu repositório:** Na sidebar direita, na seção "Packages"
+- **No perfil da organização:** `https://github.com/nubrell?tab=packages`
+- **No repositório:** Na sidebar direita, na seção "Packages"
 
 ---
 
@@ -123,12 +133,12 @@ Antes de publicar, verifique:
 
 ## 💡 Exemplo Completo
 
-Para um componente chamado `button` na organização `str-well`:
+Para um componente chamado `button` na organização `nubrell`:
 
 ### `.npmrc` (na raiz do projeto)
 
 ```ini
-@str-well:registry=https://npm.pkg.github.com
+@nubrell:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=ghp_xxxxxxxxxxxxx
 ```
 
@@ -136,7 +146,7 @@ Para um componente chamado `button` na organização `str-well`:
 
 ```json
 {
-  "name": "@str-well/button",
+  "name": "@nubrell/button",
   "version": "0.0.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
@@ -144,9 +154,9 @@ Para um componente chamado `button` na organização `str-well`:
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/str-well/seu-repo.git"
+    "url": "https://github.com/nubrell/analise-tecnica-lib-verniz.git"
   },
-  "author": "str-well",
+  "author": "nubrell",
   "license": "MIT"
 }
 ```
@@ -219,8 +229,10 @@ npm publish
    - Certifique-se de que o token no `.npmrc` é o token correto e não está expirado
    - O formato deve ser: `//npm.pkg.github.com/:_authToken=ghp_SEU_TOKEN_AQUI`
 
-4. **Verificar se o token tem acesso ao repositório:**
-   - Se você está publicando para uma organização, o token precisa ter permissão para acessar essa organização
+4. **Verificar se o token tem acesso à organização:**
+   - Se você está publicando para uma organização (como `nubrell`), o token precisa ter permissão para acessar essa organização
+   - Ao criar o token, certifique-se de que a organização `nubrell` está selecionada/ativa
+   - Se você é colaborador/admin da organização, o token precisa ser criado com acesso à organização
    - Se estiver usando um token antigo, pode estar expirado (tokens podem ter data de expiração)
 
 ### Erro: `Cannot find type definition file for 'minimatch'`
