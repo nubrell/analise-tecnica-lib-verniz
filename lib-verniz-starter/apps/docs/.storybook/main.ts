@@ -26,6 +26,11 @@ const config: StorybookConfig = {
           '@verniz/utils': path.resolve(__dirname, '../../../packages/utils/src'),
           '@verniz/theme': path.resolve(__dirname, '../../../packages/theme/src'),
           '@verniz/button': path.resolve(__dirname, '../../../packages/components/button/src'),
+          '@nubrell/badge': path.resolve(__dirname, '../../../packages/components/badge/src'),
+          '@nubrell/avatar': path.resolve(__dirname, '../../../packages/components/avatar/src'),
+          '@nubrell/collapsible': path.resolve(__dirname, '../../../packages/components/collapsible/src'),
+          '@nubrell/dropdown-menu': path.resolve(__dirname, '../../../packages/components/dropdown-menu/src'),
+          '@nubrell/nav': path.resolve(__dirname, '../../../packages/components/nav/src'),
         },
       },
       optimizeDeps: {
