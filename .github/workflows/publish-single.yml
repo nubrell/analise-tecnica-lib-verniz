@@ -122,6 +122,15 @@ jobs:
           echo "Building $PACKAGE_NAME..."
           cd "$PACKAGE_PATH"
           export PATH="../../node_modules/.bin:$PATH"
+          
+          # Garante que as dependências estão disponíveis
+          if [ ! -d "node_modules" ]; then
+            ln -s ../../node_modules node_modules || true
+          fi
+          
+          # Tenta instalar dependências específicas se necessário
+          yarn install --check-files || true
+          
           npx tsup || yarn build
 
           if [ ! -f "dist/index.cjs" ] && [ ! -f "dist/index.mjs" ]; then
