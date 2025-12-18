@@ -4,7 +4,7 @@ import { gridVariants, type GridVariants } from './Grid.styles';
 
 export interface GridProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    GridVariants {}
+  GridVariants { }
 
 const Grid = forwardRef<HTMLDivElement, GridProps>(
   ({ className, variant = 'default', size = 'md', ...props }, ref) => {
@@ -18,6 +18,6 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(
   }
 );
 
-Grid.displayName = 'Grid';
+Grid.displayName = 'Grisd';
 
 export { Grid };
