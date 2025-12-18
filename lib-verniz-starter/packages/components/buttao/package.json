@@ -1,5 +1,5 @@
 {
-    "name": "@nubrao/buttao",
+    "name": "@str-well/buttao",
     "version": "0.0.1",
     "description": "Button component for Verniz",
     "main": "./dist/index.cjs",
