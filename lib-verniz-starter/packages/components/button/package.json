@@ -1,5 +1,5 @@
 {
-  "name": "@verniz/button",
+  "name": "@str-well/button",
   "version": "0.0.1",
   "description": "Button component for Verniz",
   "main": "./dist/index.cjs",
@@ -20,6 +20,22 @@
   "files": [
     "dist/**"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/str-well/analise-tecnica-lib-verniz.git"
+  },
+  "keywords": [
+    "button",
+    "react",
+    "component",
+    "ui"
+  ],
+  "author": "str-well",
+  "license": "MIT",
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
@@ -43,13 +59,12 @@
     "@testing-library/react": "^14.1.2",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "jsdom": "^23.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsup": "^8.0.1",
     "typescript": "^5.4.5",
-    "vitest": "^1.1.0",
-    "jsdom": "^23.0.1",
-    "@vitejs/plugin-react": "^4.2.1"
+    "vitest": "^1.1.0"
   }
 }
-
