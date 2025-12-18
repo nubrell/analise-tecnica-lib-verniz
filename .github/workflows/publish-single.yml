@@ -98,17 +98,17 @@ jobs:
           yarn install --frozen-lockfile
           # Garante que todas as devDependencies estão instaladas
           yarn install --production=false
-          
+
           # Verifica se os workspace links foram criados
           echo "Checking workspace links..."
           ls -la node_modules/@nubrell/ || echo "⚠️  @nubrell packages not found in root node_modules"
-          
+
           # Lista os links criados
           if [ -d "node_modules/@nubrell" ]; then
             echo "✅ Workspace links found:"
             ls -la node_modules/@nubrell/
           fi
-          
+
           # Garante que os pacotes estão linkados corretamente
           yarn install --check-files
 
@@ -140,10 +140,10 @@ jobs:
           fi
 
           echo "Building $PACKAGE_NAME..."
-          
+
           # Adiciona node_modules/.bin ao PATH
           export PATH="$PWD/node_modules/.bin:$PATH"
-          
+
           # Para o nav, precisamos garantir que os workspace links estejam disponíveis
           # Cria links simbólicos se necessário
           if [[ "$PACKAGE_NAME" == "@nubrell/nav" ]]; then
@@ -166,7 +166,7 @@ jobs:
             
             cd - > /dev/null
           fi
-          
+
           # Tenta fazer build direto no diretório (não usa yarn workspace para evitar problemas)
           cd "$PACKAGE_PATH"
           yarn build || npx tsup
