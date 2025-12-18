@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: lib-verniz-starter
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Build @nubrell Packages
         working-directory: lib-verniz-starter
