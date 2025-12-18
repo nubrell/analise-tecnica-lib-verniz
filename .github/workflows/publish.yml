@@ -40,25 +40,55 @@ jobs:
       - name: Publish to GitHub Packages
         working-directory: lib-verniz-starter
         run: |
-          echo "Publishing packages to GitHub Packages..."
+          echo "Publishing @nubrell packages to GitHub Packages..."
           
-          # Publicar utils primeiro (se tiver mudanças)
-          if [ -d "packages/utils" ] && [ -f "packages/utils/dist/index.cjs" ]; then
-            echo "Publishing @nubrell/utils..."
-            cd packages/utils
-            npm publish --access restricted || echo "Utils already published or no changes"
-            cd ../..
+          # Função para verificar e publicar um package
+          publish_package() {
+            local package_dir=$1
+            local package_name=$(grep -o '"name": "[^"]*"' "$package_dir/package.json" | cut -d'"' -f4)
+            
+            # Só publica se começar com @nubrell
+            if [[ "$package_name" != @nubrell/* ]]; then
+              echo "⏭️  Skipping $package_name (not a @nubrell package)"
+              return 0
+            fi
+            
+            # Verifica se tem build gerado
+            if [ ! -f "$package_dir/dist/index.cjs" ] && [ ! -f "$package_dir/dist/index.mjs" ]; then
+              echo "⏭️  Skipping $package_name (no build files found)"
+              return 0
+            fi
+            
+            echo "📦 Publishing $package_name..."
+            cd "$package_dir"
+            
+            # Tenta publicar
+            if npm publish --access restricted; then
+              echo "✅ Successfully published $package_name"
+            else
+              exit_code=$?
+              if [ $exit_code -eq 1 ]; then
+                echo "⚠️  $package_name already published or version exists (continuing...)"
+              else
+                echo "❌ Failed to publish $package_name"
+                exit $exit_code
+              fi
+            fi
+            cd - > /dev/null
+          }
+          
+          # Publicar utils primeiro (se for @nubrell/utils)
+          if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
+            publish_package "packages/utils"
           fi
           
           # Publicar todos os componentes
           for dir in packages/components/*/; do
-            if [ -f "$dir/dist/index.cjs" ] || [ -f "$dir/dist/index.mjs" ]; then
-              component_name=$(basename "$dir")
-              echo "Publishing @nubrell/$component_name..."
-              cd "$dir"
-              npm publish --access restricted || echo "$component_name already published or no changes"
-              cd ../../..
+            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
+              publish_package "$dir"
             fi
           done
+          
+          echo "✨ Finished publishing packages!"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
