@@ -1,0 +1,62 @@
+name: Publish Packages
+
+on:
+  push:
+    tags:
+      - 'v*'  # Publica quando uma tag versão é criada (ex: v1.0.0)
+  workflow_dispatch: # Permite disparar manualmente
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and Publish Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@nubrell'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build All Packages
+        run: yarn build
+
+      - name: Publish to GitHub Packages
+        run: |
+          echo "Publishing packages to GitHub Packages..."
+          
+          # Publicar utils primeiro (se tiver mudanças)
+          if [ -d "packages/utils" ] && [ -f "packages/utils/dist/index.cjs" ]; then
+            echo "Publishing @nubrell/utils..."
+            cd packages/utils
+            npm publish --access restricted || echo "Utils already published or no changes"
+            cd ../..
+          fi
+          
+          # Publicar todos os componentes
+          for dir in packages/components/*/; do
+            if [ -f "$dir/dist/index.cjs" ] || [ -f "$dir/dist/index.mjs" ]; then
+              component_name=$(basename "$dir")
+              echo "Publishing @nubrell/$component_name..."
+              cd "$dir"
+              npm publish --access restricted || echo "$component_name already published or no changes"
+              cd ../../..
+            fi
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

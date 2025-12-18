@@ -272,4 +272,43 @@ Depois execute `yarn install`.
 
 ---
 
+## 🚀 Publicação via GitHub Actions (Recomendado)
+
+Se você está tendo problemas com tokens pessoais, pode usar GitHub Actions para publicar automaticamente:
+
+### Como funciona:
+
+1. **Publicação Automática**: Quando você criar uma tag (ex: `v1.0.0`), os packages serão publicados automaticamente
+2. **Publicação Manual**: 
+   - Vá para o GitHub → Actions
+   - Selecione "Publish Packages" ou "Publish Single Package"
+   - Clique em "Run workflow"
+   - Para package único, informe o caminho (ex: `packages/components/button`)
+   - Clique em "Run workflow"
+
+### Vantagens:
+
+- ✅ Não precisa configurar token pessoal
+- ✅ Usa o `GITHUB_TOKEN` automático do GitHub
+- ✅ Funciona para organizações sem problemas de permissão
+- ✅ Publicação automática e segura
+
+### Para publicar um componente novo:
+
+1. Incremente a versão no `package.json` do componente
+2. Faça commit e push:
+   ```bash
+   git add .
+   git commit -m "feat: atualiza componente button para v0.0.2"
+   git push
+   ```
+3. Crie uma tag (ou use o workflow manual):
+   ```bash
+   git tag v0.0.2
+   git push origin v0.0.2
+   ```
+4. O workflow publicará automaticamente!
+
+---
+
 **Pronto! Agora você está pronto para publicar seus componentes! 🎉**
