@@ -25,7 +25,7 @@ export interface NavCollapsibleItemProps
 }
 
 const NavCollapsibleItem = React.forwardRef<
-  HTMLElement,
+  HTMLDivElement,
   NavCollapsibleItemProps
 >(({ item, linkComponent, asChild = false, className }, ref) => {
   const { isCollapsed } = useNav();
@@ -86,7 +86,7 @@ const NavCollapsibleItem = React.forwardRef<
 
   // Quando expandido, mostra o collapsible normal
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible ref={ref} open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger
         className={cn(
           'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
