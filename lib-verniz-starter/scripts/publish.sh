@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Script para publicar um componente automaticamente
-# Uso: ./scripts/publish.sh <nome-do-componente>
-# Exemplo: ./scripts/publish.sh menu
+# Uso: yarn publish:component <nome-do-componente>
+# Exemplo: yarn publish:component menu
 
 set -e
 
@@ -15,12 +15,18 @@ if [ -z "$COMPONENT_NAME" ]; then
   exit 1
 fi
 
-# Verifica se estamos na raiz do repositório (analise-tecnica-lib-verniz)
-if [ ! -d "lib-verniz-starter" ]; then
-  echo "❌ Erro: Execute este script da raiz do repositório (analise-tecnica-lib-verniz)"
+# Encontra a raiz do repositório Git
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
+
+if [ -z "$GIT_ROOT" ]; then
+  echo "❌ Erro: Não foi possível encontrar a raiz do repositório Git"
   exit 1
 fi
 
+# Navega para a raiz do repositório
+cd "$GIT_ROOT"
+
+# Define o caminho do package.json
 PACKAGE_JSON="lib-verniz-starter/packages/components/$COMPONENT_NAME/package.json"
 
 # Verifica se o componente existe
@@ -53,10 +59,10 @@ if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
     echo "❌ Cancelado"
     exit 1
   fi
+else
+  # Criar tag
+  git tag "$TAG_NAME"
 fi
-
-# Criar tag
-git tag "$TAG_NAME"
 
 # Push da tag (isso aciona o workflow automaticamente)
 echo "⬆️  Fazendo push da tag..."
@@ -65,4 +71,3 @@ git push origin "$TAG_NAME"
 echo ""
 echo "✅ Tag criada e enviada! O workflow será acionado automaticamente."
 echo "📊 Acompanhe em: https://github.com/nubrell/analise-tecnica-lib-verniz/actions"
-
