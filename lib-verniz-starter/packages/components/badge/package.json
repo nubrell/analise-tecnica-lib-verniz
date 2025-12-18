@@ -1,6 +1,6 @@
 {
   "name": "@nubrell/badge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Badge component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
