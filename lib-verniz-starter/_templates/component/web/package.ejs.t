@@ -2,9 +2,9 @@
 to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
 ---
 {
-  "name": "@verniz/<%= h.changeCase.paramCase(name) %>",
+  "name": "@str-well/<%= h.changeCase.paramCase(name) %>",
   "version": "0.0.1",
-  "description": "<%= h.changeCase.pascalCase(name) %> component for Verniz",
+  "description": "<%= h.changeCase.pascalCase(name) %> component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -23,6 +23,22 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
   "files": [
     "dist/**"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/str-well/analise-tecnica-lib-verniz.git"
+  },
+  "keywords": [
+    "<%= h.changeCase.paramCase(name) %>",
+    "react",
+    "component",
+    "ui"
+  ],
+  "author": "str-well",
+  "license": "MIT",
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
@@ -32,9 +48,9 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
-    "@verniz/utils": "0.0.1",
-    "@verniz/theme": "0.0.1",
-    "class-variance-authority": "^0.7.0"
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -46,14 +62,12 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
     "@testing-library/react": "^14.1.2",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "@verniz/typescript-config": "0.0.1",
     "@vitejs/plugin-react": "^4.2.1",
+    "jsdom": "^23.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsup": "^8.0.1",
     "typescript": "^5.4.5",
-    "vitest": "^1.1.0",
-    "jsdom": "^23.0.1"
+    "vitest": "^1.1.0"
   }
 }
-
