@@ -38,26 +38,22 @@ jobs:
         run: |
           echo "Building @nubrell packages..."
           
-          # Build utils
+          # Build utils usando yarn workspace
           if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
             package_name=$(grep -o '"name": "[^"]*"' packages/utils/package.json | cut -d'"' -f4)
             if [[ "$package_name" == @nubrell/* ]]; then
               echo "Building $package_name..."
-              cd packages/utils
-              yarn build
-              cd ../..
+              yarn workspace "$package_name" build
             fi
           fi
           
-          # Build todos os componentes
+          # Build todos os componentes usando yarn workspace
           for dir in packages/components/*/; do
             if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
               package_name=$(grep -o '"name": "[^"]*"' "$dir/package.json" | cut -d'"' -f4)
               if [[ "$package_name" == @nubrell/* ]]; then
                 echo "Building $package_name..."
-                cd "$dir"
-                yarn build
-                cd ../../..
+                yarn workspace "$package_name" build
               fi
             fi
           done
