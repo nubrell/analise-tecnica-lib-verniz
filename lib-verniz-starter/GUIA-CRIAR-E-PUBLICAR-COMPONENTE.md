@@ -21,6 +21,7 @@ yarn component
 Quando solicitado, digite o nome do componente em **kebab-case** (ex: `meu-componente`, `input-text`, `card`).
 
 Isso criará toda a estrutura necessária:
+
 - ✅ Componente React com TypeScript
 - ✅ Estilos com CVA (Class Variance Authority)
 - ✅ Testes
@@ -83,6 +84,7 @@ nubrell/nome-do-componente@versao
 ```
 
 **Exemplo:**
+
 - Componente: `meu-componente`
 - Versão: `0.0.1`
 - Tag: `nubrell/meu-componente@0.0.1`
@@ -100,7 +102,8 @@ git tag nubrell/meu-componente@0.0.1
 git push origin nubrell/meu-componente@0.0.1
 ```
 
-⚠️ **Importante:** 
+⚠️ **Importante:**
+
 - Use o nome exato do componente como está na pasta (kebab-case)
 - A versão deve ser compatível com semver (ex: 0.0.1, 0.1.0, 1.0.0)
 - O workflow será acionado automaticamente quando você fizer push da tag
@@ -110,6 +113,7 @@ git push origin nubrell/meu-componente@0.0.1
 ### 6️⃣ Verificar a Publicação
 
 1. Vá para **Actions** no GitHub:
+
    ```
    https://github.com/nubrell/analise-tecnica-lib-verniz/actions
    ```
@@ -212,4 +216,3 @@ yarn add @nubrell/seu-componente
 @nubrell:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=SEU_TOKEN_AQUI
 ```
-
