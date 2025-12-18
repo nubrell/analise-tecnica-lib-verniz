@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 
 const meta: Meta<typeof Grid> = {
-  title: 'Components/Grid',
+  title: 'Components/Grisd',
   component: Grid,
   parameters: {
     layout: 'centered',
@@ -25,14 +25,14 @@ type Story = StoryObj<typeof Grid>;
 
 export const Default: Story = {
   args: {
-    children: 'Grid',
+    children: 'Grisd',
   },
 };
 
 export const Secondary: Story = {
   args: {
     variant: 'secondary',
-    children: 'Grid',
+    children: 'Grisd',
   },
 };
 
