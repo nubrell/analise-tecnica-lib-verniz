@@ -127,20 +127,19 @@ jobs:
           fi
 
           echo "Building $PACKAGE_NAME..."
-          cd "$PACKAGE_PATH"
-          export PATH="../../node_modules/.bin:$PATH"
           
-          # Garante que as dependências estão disponíveis
-          if [ ! -d "node_modules" ]; then
-            ln -s ../../node_modules node_modules || true
-          fi
+          # Adiciona node_modules/.bin ao PATH
+          export PATH="$PWD/node_modules/.bin:$PATH"
           
-          # Tenta instalar dependências específicas se necessário
-          yarn install --check-files || true
-          
-          npx tsup || yarn build
+          # Usa yarn workspace para fazer o build (usa os workspace links)
+          yarn workspace "$PACKAGE_NAME" build || (
+            # Fallback: tenta fazer build direto no diretório
+            cd "$PACKAGE_PATH"
+            npx tsup || yarn build
+          )
 
-          if [ ! -f "dist/index.cjs" ] && [ ! -f "dist/index.mjs" ]; then
+          # Verifica se o build foi bem-sucedido
+          if [ ! -f "$PACKAGE_PATH/dist/index.cjs" ] && [ ! -f "$PACKAGE_PATH/dist/index.mjs" ]; then
             echo "❌ Error: Build failed - no output files found"
             exit 1
           fi
