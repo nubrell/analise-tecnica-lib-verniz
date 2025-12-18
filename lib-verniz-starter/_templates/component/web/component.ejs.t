@@ -2,7 +2,7 @@
 to: packages/components/<%= h.changeCase.paramCase(name) %>/src/<%= h.changeCase.pascalCase(name) %>.tsx
 ---
 import { forwardRef } from 'react';
-import { cn } from '@verniz/utils';
+import { cn } from './cn';
 import { <%= h.changeCase.camelCase(name) %>Variants, type <%= h.changeCase.pascalCase(name) %>Variants } from './<%= h.changeCase.pascalCase(name) %>.styles';
 
 export interface <%= h.changeCase.pascalCase(name) %>Props
@@ -24,4 +24,3 @@ const <%= h.changeCase.pascalCase(name) %> = forwardRef<HTMLDivElement, <%= h.ch
 <%= h.changeCase.pascalCase(name) %>.displayName = '<%= h.changeCase.pascalCase(name) %>';
 
 export { <%= h.changeCase.pascalCase(name) %> };
-
