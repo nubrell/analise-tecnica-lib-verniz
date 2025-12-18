@@ -87,7 +87,10 @@ jobs:
 
       - name: Install Dependencies
         working-directory: lib-verniz-starter
-        run: yarn install
+        run: |
+          yarn install --frozen-lockfile
+          # Garante que todas as devDependencies estão instaladas
+          yarn install --production=false
 
       - name: Update package version from tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
