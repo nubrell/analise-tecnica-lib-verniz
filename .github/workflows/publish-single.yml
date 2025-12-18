@@ -154,12 +154,23 @@ jobs:
 
       - name: Create Git Tag (if not exists)
         if: success() && github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        permissions:
+          contents: write
         run: |
           PACKAGE_NAME="${{ steps.package-info.outputs.package_name }}"
           VERSION="${{ steps.package-info.outputs.version }}"
-          TAG_NAME="${PACKAGE_NAME}@${VERSION}"
+          # Extract component name from package name (e.g., @nubrell/menu -> menu)
+          COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
+          TAG_NAME="nubrell/${COMPONENT_NAME}@${VERSION}"
+          
+          # Check if tag already exists
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, skipping"
+            exit 0
+          fi
           
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG_NAME" -m "Release $PACKAGE_NAME@$VERSION" || true
-          git push origin "$TAG_NAME" || true
+          git tag -a "$TAG_NAME" -m "Release $PACKAGE_NAME@$VERSION" || echo "Failed to create tag (non-critical)"
+          git push origin "$TAG_NAME" || echo "Failed to push tag (non-critical)"
