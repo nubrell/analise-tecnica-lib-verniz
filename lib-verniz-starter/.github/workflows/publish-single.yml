@@ -1,0 +1,44 @@
+name: Publish Single Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_path:
+        description: 'Caminho do package (ex: packages/components/button)'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@nubrell'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Package
+        run: |
+          cd ${{ github.event.inputs.package_path }}
+          yarn build
+
+      - name: Publish Package
+        run: |
+          cd ${{ github.event.inputs.package_path }}
+          npm publish --access restricted
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
