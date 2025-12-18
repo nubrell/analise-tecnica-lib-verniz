@@ -3,11 +3,11 @@ name: Publish Single Package
 on:
   push:
     tags:
-      - 'nubrell/*@*'  # Publica quando uma tag de componente é criada (ex: nubrell/button@0.0.1)
+      - "nubrell/*@*" # Publica quando uma tag de componente é criada (ex: nubrell/button@0.0.1)
   workflow_dispatch:
     inputs:
       package_path:
-        description: 'Caminho do package (ex: packages/components/button)'
+        description: "Caminho do package (ex: packages/components/button)"
         required: false
         type: string
 
@@ -20,21 +20,21 @@ jobs:
     name: Publish Single Package
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Precisamos do histórico completo para tags
+          fetch-depth: 0 # Precisamos do histórico completo para tags
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@nubrell'
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@nubrell"
 
       - name: Extract package info from tag
         id: package-info
@@ -96,7 +96,7 @@ jobs:
           cd "${{ steps.package-info.outputs.package_path }}"
           CURRENT_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
           TARGET_VERSION="${{ steps.package-info.outputs.version }}"
-          
+
           if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
             echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
             npm version "$TARGET_VERSION" --no-git-tag-version
@@ -110,22 +110,22 @@ jobs:
         run: |
           PACKAGE_PATH="${{ steps.package-info.outputs.package_path }}"
           PACKAGE_NAME="${{ steps.package-info.outputs.package_name }}"
-          
+
           if [[ "$PACKAGE_NAME" != @nubrell/* ]]; then
             echo "❌ Error: Only @nubrell packages can be published via this workflow."
             exit 1
           fi
-          
+
           echo "Building $PACKAGE_NAME..."
           cd "$PACKAGE_PATH"
           export PATH="../../node_modules/.bin:$PATH"
           npx tsup || yarn build
-          
+
           if [ ! -f "dist/index.cjs" ] && [ ! -f "dist/index.mjs" ]; then
             echo "❌ Error: Build failed - no output files found"
             exit 1
           fi
-          
+
           echo "✅ Build successful!"
 
       - name: Publish Package
@@ -133,10 +133,10 @@ jobs:
         run: |
           PACKAGE_PATH="${{ steps.package-info.outputs.package_path }}"
           PACKAGE_NAME="${{ steps.package-info.outputs.package_name }}"
-          
+
           echo "📦 Publishing $PACKAGE_NAME..."
           cd "$PACKAGE_PATH"
-          
+
           if npm publish --access restricted; then
             echo "✅ Successfully published $PACKAGE_NAME"
           else
@@ -155,21 +155,19 @@ jobs:
       - name: Create Git Tag (if not exists)
         if: success() && github.event_name == 'workflow_dispatch'
         continue-on-error: true
-        permissions:
-          contents: write
         run: |
           PACKAGE_NAME="${{ steps.package-info.outputs.package_name }}"
           VERSION="${{ steps.package-info.outputs.version }}"
           # Extract component name from package name (e.g., @nubrell/menu -> menu)
           COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
           TAG_NAME="nubrell/${COMPONENT_NAME}@${VERSION}"
-          
+
           # Check if tag already exists
           if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
             echo "Tag $TAG_NAME already exists, skipping"
             exit 0
           fi
-          
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "$TAG_NAME" -m "Release $PACKAGE_NAME@$VERSION" || echo "Failed to create tag (non-critical)"
