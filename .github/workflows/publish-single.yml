@@ -98,52 +98,39 @@ jobs:
           # Instala dependências
           yarn install --frozen-lockfile --production=false
 
-          # Verifica se os workspace links foram criados
-          echo "Checking workspace links..."
-          if [ -d "node_modules/@nubrell" ]; then
-            echo "✅ Workspace links found:"
-            ls -la node_modules/@nubrell/
-          else
-            echo "⚠️  @nubrell packages not found in root node_modules"
-            echo "Creating workspace links manually..."
-            mkdir -p node_modules/@nubrell
-            
-            # Cria links para todos os pacotes @nubrell que existem
-            for dir in packages/components/*/; do
-              if [ -f "$dir/package.json" ]; then
-                PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "$dir/package.json" | cut -d'"' -f4)
-                if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
-                  COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
-                  if [ ! -L "node_modules/@nubrell/$COMPONENT_NAME" ]; then
-                    # Usa caminho absoluto para garantir que o link funcione
-                    ABS_DIR="$(cd "$dir" && pwd)"
-                    ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
-                    echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
-                  fi
-                fi
-              fi
-            done
-            
-            # Também verifica pacotes em packages/utils
-            if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
-              PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "packages/utils/package.json" | cut -d'"' -f4)
+          # Sempre garante que os workspace links estejam criados
+          echo "Setting up workspace links for @nubrell packages..."
+          mkdir -p node_modules/@nubrell
+
+          # Cria/atualiza links para todos os pacotes @nubrell que existem em packages/components
+          for dir in packages/components/*/; do
+            if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
+              PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "$dir/package.json" | cut -d'"' -f4)
               if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
                 COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
-                if [ ! -L "node_modules/@nubrell/$COMPONENT_NAME" ]; then
-                  ABS_DIR="$(cd packages/utils && pwd)"
-                  ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
-                  echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
-                fi
+                # Usa caminho absoluto para garantir que o link funcione
+                ABS_DIR="$(cd "$dir" && pwd)"
+                # Força a criação/atualização do link (ln -sf sobrescreve se existir)
+                ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
+                echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
               fi
+            fi
+          done
+
+          # Também verifica e cria link para packages/utils
+          if [ -d "packages/utils" ] && [ -f "packages/utils/package.json" ]; then
+            PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "packages/utils/package.json" | cut -d'"' -f4)
+            if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
+              COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
+              ABS_DIR="$(cd packages/utils && pwd)"
+              ln -sf "$ABS_DIR" "node_modules/@nubrell/$COMPONENT_NAME"
+              echo "  ✅ Linked $PACKAGE_NAME -> $ABS_DIR"
             fi
           fi
 
-          # Verifica novamente e valida os links
-          echo "Final workspace links:"
-          ls -la node_modules/@nubrell/ || echo "No @nubrell packages found"
-
           # Valida que os links apontam para diretórios válidos
-          echo "Validating links..."
+          echo ""
+          echo "Validating workspace links:"
           for link in node_modules/@nubrell/*; do
             if [ -L "$link" ]; then
               TARGET=$(readlink -f "$link")
