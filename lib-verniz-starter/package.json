@@ -16,6 +16,7 @@
         "changeset:version": "changeset version",
         "changeset:publish": "changeset publish",
         "component": "hygen component web",
+        "publish:component": "bash scripts/publish.sh",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules && rm -rf */*/dist"
     },
     "devDependencies": {
