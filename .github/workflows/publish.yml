@@ -33,9 +33,11 @@ jobs:
         working-directory: lib-verniz-starter
         run: yarn install --frozen-lockfile
 
-      - name: Build All Packages
+      - name: Build @nubrell Packages Only
         working-directory: lib-verniz-starter
-        run: yarn build
+        run: |
+          # Build apenas packages @nubrell usando turbo filter
+          yarn turbo run build --filter='@nubrell/*'
 
       - name: Publish to GitHub Packages
         working-directory: lib-verniz-starter
