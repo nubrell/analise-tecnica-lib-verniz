@@ -8,6 +8,8 @@ export default defineConfig({
   dts: {
     compilerOptions: {
       skipLibCheck: true,
+      skipDefaultLibCheck: true,
+      types: [],
     },
   },
   format: ['esm', 'cjs'],
