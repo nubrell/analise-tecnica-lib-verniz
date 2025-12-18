@@ -19,13 +19,17 @@
         "publish:component": "bash scripts/publish.sh",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules && rm -rf */*/dist"
     },
-    "devDependencies": {
-        "@changesets/cli": "^2.27.1",
-        "@types/minimatch": "^6.0.0",
-        "hygen": "^6.2.11",
-        "turbo": "^2.0.4",
-        "typescript": "^5.4.5"
-    },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-collapsible": "^1.0.3",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@types/minimatch": "^6.0.0",
+    "hygen": "^6.2.11",
+    "turbo": "^2.0.4",
+    "typescript": "^5.4.5"
+  },
     "packageManager": "yarn@1.22.19",
     "engines": {
         "node": ">=18.18.0"
