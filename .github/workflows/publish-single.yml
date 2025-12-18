@@ -95,22 +95,37 @@ jobs:
       - name: Install Dependencies
         working-directory: lib-verniz-starter
         run: |
-          yarn install --frozen-lockfile
-          # Garante que todas as devDependencies estão instaladas
-          yarn install --production=false
-
+          # Instala dependências
+          yarn install --frozen-lockfile --production=false
+          
           # Verifica se os workspace links foram criados
           echo "Checking workspace links..."
-          ls -la node_modules/@nubrell/ || echo "⚠️  @nubrell packages not found in root node_modules"
-
-          # Lista os links criados
           if [ -d "node_modules/@nubrell" ]; then
             echo "✅ Workspace links found:"
             ls -la node_modules/@nubrell/
+          else
+            echo "⚠️  @nubrell packages not found in root node_modules"
+            echo "Creating workspace links manually..."
+            mkdir -p node_modules/@nubrell
+            
+            # Cria links para todos os pacotes @nubrell que existem
+            for dir in packages/components/*/; do
+              if [ -f "$dir/package.json" ]; then
+                PACKAGE_NAME=$(grep -o '"name": "[^"]*"' "$dir/package.json" | cut -d'"' -f4)
+                if [[ "$PACKAGE_NAME" == @nubrell/* ]]; then
+                  COMPONENT_NAME="${PACKAGE_NAME#@nubrell/}"
+                  if [ ! -L "node_modules/@nubrell/$COMPONENT_NAME" ]; then
+                    ln -s "../../$dir" "node_modules/@nubrell/$COMPONENT_NAME"
+                    echo "  ✅ Linked $PACKAGE_NAME"
+                  fi
+                fi
+              fi
+            done
           fi
-
-          # Garante que os pacotes estão linkados corretamente
-          yarn install --check-files
+          
+          # Verifica novamente
+          echo "Final workspace links:"
+          ls -la node_modules/@nubrell/ || echo "No @nubrell packages found"
 
       - name: Update package version from tag
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -145,7 +160,6 @@ jobs:
           export PATH="$PWD/node_modules/.bin:$PATH"
 
           # Para o nav, precisamos garantir que os workspace links estejam disponíveis
-          # Cria links simbólicos se necessário
           if [[ "$PACKAGE_NAME" == "@nubrell/nav" ]]; then
             echo "Setting up workspace links for nav dependencies..."
             cd "$PACKAGE_PATH"
@@ -153,22 +167,40 @@ jobs:
             # Cria node_modules se não existir
             mkdir -p node_modules/@nubrell
             
-            # Cria links simbólicos para os pacotes dependentes
-            if [ ! -L "node_modules/@nubrell/badge" ] && [ -d "../../../node_modules/@nubrell/badge" ]; then
-              ln -s ../../../../node_modules/@nubrell/badge node_modules/@nubrell/badge
-            fi
-            if [ ! -L "node_modules/@nubrell/collapsible" ] && [ -d "../../../node_modules/@nubrell/collapsible" ]; then
-              ln -s ../../../../node_modules/@nubrell/collapsible node_modules/@nubrell/collapsible
-            fi
-            if [ ! -L "node_modules/@nubrell/dropdown-menu" ] && [ -d "../../../node_modules/@nubrell/dropdown-menu" ]; then
-              ln -s ../../../../node_modules/@nubrell/dropdown-menu node_modules/@nubrell/dropdown-menu
-            fi
+            # Lista de dependências do nav
+            DEPS=("badge" "collapsible" "dropdown-menu")
+            
+            for dep in "${DEPS[@]}"; do
+              # Verifica se o link já existe na raiz
+              if [ -L "../../node_modules/@nubrell/$dep" ]; then
+                echo "  ✅ Found workspace link for @nubrell/$dep in root"
+                # Cria link local apontando para o link da raiz
+                if [ ! -L "node_modules/@nubrell/$dep" ]; then
+                  ln -s "../../../node_modules/@nubrell/$dep" "node_modules/@nubrell/$dep"
+                  echo "  ✅ Created local link for @nubrell/$dep"
+                fi
+              # Se não existe link, cria direto do source
+              elif [ -d "../../components/$dep" ]; then
+                echo "  ✅ Found source for @nubrell/$dep, creating link"
+                if [ ! -L "node_modules/@nubrell/$dep" ]; then
+                  ln -s "../../../components/$dep" "node_modules/@nubrell/$dep"
+                  echo "  ✅ Created link from source for @nubrell/$dep"
+                fi
+              else
+                echo "  ⚠️  Could not find @nubrell/$dep"
+              fi
+            done
+            
+            # Verifica os links criados
+            echo "Local links created:"
+            ls -la node_modules/@nubrell/ || echo "No links found"
             
             cd - > /dev/null
           fi
-
-          # Tenta fazer build direto no diretório (não usa yarn workspace para evitar problemas)
+          
+          # Faz build direto no diretório
           cd "$PACKAGE_PATH"
+          echo "Running build in $PACKAGE_PATH..."
           yarn build || npx tsup
 
           # Verifica se o build foi bem-sucedido
