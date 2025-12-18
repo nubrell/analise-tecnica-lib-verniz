@@ -29,6 +29,13 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@nubrell'
 
+      - name: Configure npm/yarn for GitHub Packages
+        working-directory: lib-verniz-starter
+        run: |
+          # Cria .npmrc para yarn usar o token do GitHub Packages
+          echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+
       - name: Install Dependencies
         working-directory: lib-verniz-starter
         run: |
@@ -38,6 +45,10 @@ jobs:
           # Verifica se os pacotes Radix foram instalados
           echo "Checking Radix UI packages..."
           ls -la node_modules/@radix-ui/ || echo "Radix packages not found in root"
+          
+          # Verifica se os pacotes @nubrell foram instalados (workspace links)
+          echo "Checking @nubrell packages..."
+          ls -la node_modules/@nubrell/ || echo "@nubrell packages not found in root"
           
           # Garante que os pacotes estão disponíveis
           yarn install --check-files
