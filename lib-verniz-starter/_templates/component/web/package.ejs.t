@@ -60,6 +60,7 @@ to: packages/components/<%= h.changeCase.paramCase(name) %>/package.json
     "@storybook/react": "^7.6.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
+    "@types/minimatch": "^6.0.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
