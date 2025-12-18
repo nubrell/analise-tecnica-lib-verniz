@@ -3,6 +3,7 @@
 ## 📋 Pré-requisitos
 
 1. **Token do GitHub** (Personal Access Token) com permissão `write:packages`:
+
    - Acesse: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
    - Clique em "Generate new token"
    - Marque a opção `write:packages`
@@ -18,7 +19,9 @@
 
 ### 1️⃣ Configurar o `.npmrc` na raiz do projeto
 
-Crie/edite o arquivo `.npmrc` na raiz do seu monorepo:
+⚠️ **IMPORTANTE:** Cada pessoa deve criar seu próprio arquivo `.npmrc` localmente com seu próprio token. O `.npmrc` NÃO deve ser versionado no Git (já está no `.gitignore`).
+
+Crie/edite o arquivo `.npmrc` na raiz do seu monorepo (apenas localmente, no seu computador):
 
 ```ini
 @SUA-ORG:registry=https://npm.pkg.github.com
@@ -26,8 +29,11 @@ Crie/edite o arquivo `.npmrc` na raiz do seu monorepo:
 ```
 
 **Substitua:**
+
 - `SUA-ORG` → Seu usuário ou organização do GitHub
-- `SEU_TOKEN_AQUI` → O token que você gerou
+- `SEU_TOKEN_AQUI` → O token que você gerou (com a permissão `write:packages`)
+
+**Cada desenvolvedor usa seu próprio token!** Não compartilhe tokens ou faça commit do `.npmrc`.
 
 ---
 
@@ -78,6 +84,8 @@ Verifique se a pasta `dist/` foi criada com os arquivos gerados.
 ---
 
 ### 5️⃣ Publicar no GitHub Packages
+
+⚠️ **Importante:** Use `npm publish` e não `yarn publish` para evitar problemas de autenticação.
 
 ```bash
 npm publish
@@ -155,7 +163,7 @@ cd packages/components/button
 # 3. Build
 yarn build
 
-# 4. Publicar
+# 4. Publicar (⚠️ IMPORTANTE: use npm publish, não yarn publish)
 npm publish
 ```
 
@@ -173,13 +181,75 @@ npm publish
 ## 🆘 Problemas Comuns
 
 ### Erro: `code ENEEDAUTH`
+
 **Solução:** Verifique se o token está correto no `.npmrc`
 
 ### Erro: `404 Not Found`
+
 **Solução:** Verifique se o nome do package (`name` no `package.json`) está no formato `@SUA-ORG/nome` e corresponde ao que está no `.npmrc`
 
 ### Erro: `package already exists`
+
 **Solução:** Incremente a versão no `package.json` antes de publicar novamente
+
+### Erro: `Permission permission denied: The token provided does not match expected scopes`
+
+**Causa:** O token do GitHub não tem as permissões necessárias ou está inválido.
+
+**Soluções:**
+
+1. **Verificar permissões do token:**
+
+   - Acesse: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Verifique se o token tem a permissão `write:packages` marcada
+   - Se não tiver, você precisa criar um novo token com essa permissão
+
+2. **Usar `npm publish` ao invés de `yarn publish`:**
+
+   ```bash
+   # ❌ Não use:
+   yarn publish
+
+   # ✅ Use:
+   npm publish
+   ```
+
+3. **Verificar se o token está correto no `.npmrc`:**
+
+   - Certifique-se de que o token no `.npmrc` é o token correto e não está expirado
+   - O formato deve ser: `//npm.pkg.github.com/:_authToken=ghp_SEU_TOKEN_AQUI`
+
+4. **Verificar se o token tem acesso ao repositório:**
+   - Se você está publicando para uma organização, o token precisa ter permissão para acessar essa organização
+   - Se estiver usando um token antigo, pode estar expirado (tokens podem ter data de expiração)
+
+### Erro: `Cannot find type definition file for 'minimatch'`
+
+**Causa:** Você está tentando executar `tsc` diretamente na raiz do projeto e o TypeScript não encontra os tipos necessários.
+
+**Solução:** Use o comando de build do package ao invés de `tsc` diretamente:
+
+```bash
+# ❌ Não faça isso:
+yarn tsc --declaration --emitDeclarationOnly --outDir dist
+
+# ✅ Faça isso:
+cd packages/components/button  # ou packages/utils
+yarn build
+```
+
+Se realmente precisar usar `tsc` diretamente na raiz, adicione `@types/minimatch` como devDependency no `package.json` da raiz:
+
+```json
+{
+  "devDependencies": {
+    "@types/minimatch": "^6.0.0",
+    "typescript": "^5.4.5"
+  }
+}
+```
+
+Depois execute `yarn install`.
 
 ---
 
@@ -191,4 +261,3 @@ npm publish
 ---
 
 **Pronto! Agora você está pronto para publicar seus componentes! 🎉**
-
