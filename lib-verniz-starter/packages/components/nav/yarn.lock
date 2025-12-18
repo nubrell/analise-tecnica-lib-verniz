@@ -643,7 +643,7 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@nubrell/badge@*":
+"@nubrell/badge@^0.0.2":
   version "0.0.2"
   resolved "https://npm.pkg.github.com/download/@nubrell/badge/0.0.2/c35c41a515ad1353a42875bc27246afab2f179be#c35c41a515ad1353a42875bc27246afab2f179be"
   integrity sha512-FEFSPsL0+g2dURbyAYPNUGGyl0qf+szQDzfip3C87LPq/kZakaxhzDRUcS80gXhOaJaVIresTY4wttKsiN8s3A==
@@ -653,7 +653,7 @@
     clsx "^2.1.0"
     tailwind-merge "^2.2.0"
 
-"@nubrell/collapsible@*":
+"@nubrell/collapsible@^0.0.2":
   version "0.0.2"
   resolved "https://npm.pkg.github.com/download/@nubrell/collapsible/0.0.2/14b17fdfda4084a1a8201b8d078ed623cd19b292#14b17fdfda4084a1a8201b8d078ed623cd19b292"
   integrity sha512-9fk6uBhhFFdI568MI+1PAS3aNoQEMCzugQhcYjrrOiXLq/v1jlKgfyR4Ttf1eiKiNZq4+yUjiypMSz2ZFZ5J9g==
@@ -661,7 +661,7 @@
     clsx "^2.1.0"
     tailwind-merge "^2.2.0"
 
-"@nubrell/dropdown-menu@*":
+"@nubrell/dropdown-menu@^0.0.2":
   version "0.0.2"
   resolved "https://npm.pkg.github.com/download/@nubrell/dropdown-menu/0.0.2/1e64abfdd68a26f90d1213b38ad313836ab0f760#1e64abfdd68a26f90d1213b38ad313836ab0f760"
   integrity sha512-b+/rPpYhi2kXjfpXgcj26zhIsvmizdqh8qw0K+anRolDr71cJ4BzuDMsPnrwSjwLol0R528E0FhD9BFJVMkTwA==

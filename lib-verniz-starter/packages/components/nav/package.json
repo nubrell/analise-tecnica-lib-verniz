@@ -59,9 +59,9 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@nubrell/badge": "*",
-    "@nubrell/collapsible": "*",
-    "@nubrell/dropdown-menu": "*",
+    "@nubrell/badge": "^0.0.2",
+    "@nubrell/collapsible": "^0.0.2",
+    "@nubrell/dropdown-menu": "^0.0.2",
     "@storybook/react": "^7.6.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
@@ -78,4 +78,3 @@
     "vitest": "^1.1.0"
   }
 }
-
