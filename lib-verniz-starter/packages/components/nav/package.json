@@ -1,6 +1,6 @@
 {
   "name": "@nubrell/nav",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Nav component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
