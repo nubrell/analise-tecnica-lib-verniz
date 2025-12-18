@@ -185,6 +185,7 @@ jobs:
           fi
 
           # Para pacotes com dependências internas (como nav), verifica se as dependências estão linkadas
+          # e faz build delas primeiro para que os tipos estejam disponíveis
           if [[ "$PACKAGE_NAME" == "@nubrell/nav" ]]; then
             echo "Verifying nav dependencies..."
             DEPS=("badge" "collapsible" "dropdown-menu")
@@ -193,6 +194,28 @@ jobs:
             for dep in "${DEPS[@]}"; do
               if [ -L "node_modules/@nubrell/$dep" ] || [ -d "node_modules/@nubrell/$dep" ]; then
                 echo "  ✅ @nubrell/$dep is available"
+                
+                # Verifica se precisa fazer build do dependente
+                DEP_PATH="packages/components/$dep"
+                if [ -d "$DEP_PATH" ]; then
+                  # Verifica se já tem dist com arquivos de tipos
+                  if [ ! -f "$DEP_PATH/dist/index.d.ts" ]; then
+                    echo "  🔨 Building @nubrell/$dep to generate type definitions..."
+                    cd "$DEP_PATH"
+                    yarn build || npx tsup
+                    cd - > /dev/null
+                    
+                    # Verifica se o build foi bem-sucedido
+                    if [ ! -f "$DEP_PATH/dist/index.d.ts" ]; then
+                      echo "  ❌ Failed to build @nubrell/$dep"
+                      MISSING_DEPS+=("$dep")
+                    else
+                      echo "  ✅ @nubrell/$dep built successfully"
+                    fi
+                  else
+                    echo "  ✅ @nubrell/$dep already has type definitions"
+                  fi
+                fi
               else
                 echo "  ❌ @nubrell/$dep is missing"
                 MISSING_DEPS+=("$dep")
