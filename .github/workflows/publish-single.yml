@@ -97,7 +97,7 @@ jobs:
         run: |
           # Instala dependências
           yarn install --frozen-lockfile --production=false
-          
+
           # Verifica se os workspace links foram criados
           echo "Checking workspace links..."
           if [ -d "node_modules/@nubrell" ]; then
@@ -122,7 +122,7 @@ jobs:
               fi
             done
           fi
-          
+
           # Verifica novamente
           echo "Final workspace links:"
           ls -la node_modules/@nubrell/ || echo "No @nubrell packages found"
@@ -197,7 +197,7 @@ jobs:
             
             cd - > /dev/null
           fi
-          
+
           # Faz build direto no diretório
           cd "$PACKAGE_PATH"
           echo "Running build in $PACKAGE_PATH..."
