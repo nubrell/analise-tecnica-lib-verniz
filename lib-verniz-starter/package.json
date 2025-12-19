@@ -4,6 +4,7 @@
     "private": true,
     "workspaces": [
         "packages/*",
+        "packages/components/*",
         "apps/*",
         "shared/*"
     ],
@@ -15,6 +16,7 @@
         "changeset": "changeset",
         "changeset:version": "changeset version",
         "changeset:publish": "changeset publish",
+        "publish-packages": "turbo run build && changeset version && changeset publish",
         "component": "node scripts/component.js",
         "publish:component": "bash scripts/publish.sh",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf */node_modules && rm -rf */*/node_modules && rm -rf */*/dist"
