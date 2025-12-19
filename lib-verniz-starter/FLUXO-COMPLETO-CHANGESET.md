@@ -141,11 +141,11 @@ Após o merge do PR para `main`, o workflow `release.yml` executa automaticament
    - Atualiza versões nos `package.json`
    - Gera/atualiza CHANGELOGs
    - Remove changesets processados
-3. **Cria Release PR** (`changeset-release/main`) com as mudanças de versão
-4. **Quando você faz merge do Release PR:**
+   - Commita e faz push das mudanças para `main`
+3. **Build e Publica:**
    - Faz build dos pacotes
-   - Publica no GitHub Packages
-   - **Exclui automaticamente a branch do componente** (se não for `changeset-release/main`)
+   - Publica no GitHub Packages automaticamente
+4. **Exclui a branch do componente** (se configurado)
 
 ---
 
@@ -178,10 +178,10 @@ gh pr create --base main --head feat/dropdown-menu-fixes --title "fix: corrige �
 
 # 7. O workflow automaticamente:
 #    - Detecta changeset
-#    - Cria Release PR
-#    - Você faz merge do Release PR
-#    - Pacotes são publicados
-#    - Branch feat/dropdown-menu-fixes é excluída automaticamente ✅
+#    - Versiona pacotes (atualiza versões e CHANGELOGs)
+#    - Faz build dos pacotes
+#    - Publica no GitHub Packages
+#    - Tudo acontece automaticamente após o merge! ✅
 ```
 
 ---
@@ -194,10 +194,8 @@ gh pr create --base main --head feat/dropdown-menu-fixes --title "fix: corrige �
 - [ ] 4. Commit do componente + changeset
 - [ ] 5. Push e criar PR para `main`
 - [ ] 6. Revisar e fazer merge do PR
-- [ ] 7. Workflow cria Release PR automaticamente
-- [ ] 8. Fazer merge do Release PR
-- [ ] 9. Pacotes publicados automaticamente
-- [ ] 10. Branch do componente excluída automaticamente
+- [ ] 7. Workflow detecta changeset e versiona automaticamente
+- [ ] 8. Workflow faz build e publica pacotes automaticamente
 
 ---
 
@@ -205,8 +203,7 @@ gh pr create --base main --head feat/dropdown-menu-fixes --title "fix: corrige �
 
 - **Sempre crie changeset** quando fizer mudanças que precisam ser versionadas
 - **Não commite código sem changeset** se for uma mudança que afeta usuários
-- **Revise o Release PR** antes de fazer merge para garantir que as versões estão corretas
-- **A branch do componente é excluída automaticamente** após o merge do Release PR
+- **Após o merge na main, o workflow processa tudo automaticamente** (versionamento, build e publicação)
 
 ---
 
