@@ -56,7 +56,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: yarn publish-packages
+          publish: cd lib-verniz-starter && yarn publish-packages
           title: 'chore(release): publish packages'
           commit: 'chore(release): publish packages'
         env:
