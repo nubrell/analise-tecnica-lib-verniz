@@ -81,7 +81,7 @@ jobs:
       - name: Build packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: yarn build
+        run: yarn turbo run build --filter='@nubrell/*'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
