@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "@strwell/button": "^0.0.2"
-  }
+  "name": "analise-tecnica-lib-verniz",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Root package.json for changesets action"
 }
