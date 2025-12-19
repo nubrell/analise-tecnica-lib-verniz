@@ -15,6 +15,8 @@ jobs:
       contents: write
       packages: write
       id-token: write
+      # read:packages é necessário para o changeset publish verificar pacotes existentes
+      # O changeset faz 'npm info' antes de publicar, que requer leitura
 
     steps:
       - name: Checkout Repo
@@ -51,11 +53,32 @@ jobs:
         run: |
           # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
           # O changeset publish precisa do .npmrc no diretório de trabalho
-          echo "@nubrell:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          # IMPORTANTE: Criar o arquivo do zero para evitar conflitos
+          cat > .npmrc << EOF
+          @nubrell:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+          EOF
+          
+          # Também cria no home para garantir que seja encontrado
+          mkdir -p ~
+          cat > ~/.npmrc << EOF
+          @nubrell:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+          EOF
+          
           # Verifica se o arquivo foi criado corretamente (sem mostrar o token)
-          echo "✅ .npmrc configurado para @nubrell scope"
-          cat .npmrc | sed 's/:_authToken=.*/:_authToken=***/' || true
+          echo "✅ .npmrc configurado para @nubrell scope (local e home)"
+          if [ -f .npmrc ]; then
+            echo "📄 Conteúdo do .npmrc local (token mascarado):"
+            cat .npmrc | sed 's/:_authToken=.*/:_authToken=***/' || true
+          else
+            echo "❌ Erro: .npmrc não foi criado!"
+            exit 1
+          fi
+          
+          if [ -f ~/.npmrc ]; then
+            echo "📄 .npmrc no home também criado"
+          fi
 
       - name: Check for changesets
         id: check-changesets
@@ -101,18 +124,48 @@ jobs:
             exit 1
           fi
           echo "🔍 Testando autenticação com GitHub Packages..."
+          echo "📄 Verificando .npmrc no diretório atual:"
+          pwd
+          ls -la .npmrc || echo "⚠️  .npmrc não encontrado no diretório atual"
+          
           # Testa se consegue ler informações de um pacote existente
-          npm info @nubrell/utils --registry=https://npm.pkg.github.com || echo "⚠️  Pacote @nubrell/utils ainda não existe (isso é normal na primeira publicação)"
-          echo "✅ Autenticação configurada corretamente"
+          # Usa o .npmrc do diretório atual explicitamente
+          echo "🧪 Testando npm info com .npmrc local..."
+          npm info @nubrell/utils 2>&1 || echo "⚠️  Pacote @nubrell/utils ainda não existe (isso é normal na primeira publicação)"
+          
+          # Verifica se o token está sendo usado
+          echo "🔑 Verificando se o token está configurado..."
+          if grep -q "_authToken" .npmrc; then
+            echo "✅ Token encontrado no .npmrc"
+          else
+            echo "❌ Token NÃO encontrado no .npmrc!"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Garante que o npm use o .npmrc do diretório atual
+          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/lib-verniz-starter/.npmrc
 
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
         run: |
+          # Verifica novamente se o .npmrc existe
+          if [ ! -f .npmrc ]; then
+            echo "❌ Erro: .npmrc não encontrado antes de publicar!"
+            exit 1
+          fi
+          
           echo "📦 Publicando pacotes com changeset..."
+          echo "📄 Usando .npmrc do diretório: $(pwd)/.npmrc"
+          
+          # Garante que o yarn/npm use o .npmrc do diretório atual
+          # O changeset publish usa npm/yarn internamente
           yarn changeset:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Força o npm/yarn a usar o .npmrc do diretório de trabalho
+          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/lib-verniz-starter/.npmrc
+          # Garante que o yarn também use o .npmrc correto
+          YARN_NPM_REGISTRY_SERVER: https://npm.pkg.github.com
