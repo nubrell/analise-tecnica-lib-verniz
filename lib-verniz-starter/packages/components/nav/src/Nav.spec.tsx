@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { Nav } from './Nav';
+import { Nav } from './Nav/Nav';
 
 const mockGroups = [
   {
