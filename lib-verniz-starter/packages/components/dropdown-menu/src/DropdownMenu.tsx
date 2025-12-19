@@ -133,7 +133,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        {radioIcon || '●well'}
+        {radioIcon || '●wells'}
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
