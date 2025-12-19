@@ -1,5 +1,13 @@
 # @nubrell/nav
 
+## 1.0.1
+
+### Patch Changes
+
+- ec25e5d: teste
+- Updated dependencies [ec25e5d]
+  - @nubrell/dropdown-menu@0.1.1
+
 ## 1.0.0
 
 ### Minor Changes
