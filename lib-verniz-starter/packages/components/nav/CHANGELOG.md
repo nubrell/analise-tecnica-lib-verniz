@@ -1,5 +1,13 @@
 # @nubrell/nav
 
+## 1.0.5
+
+### Patch Changes
+
+- d5323ec: teste
+- Updated dependencies [d5323ec]
+  - @nubrell/dropdown-menu@0.1.5
+
 ## 1.0.4
 
 ### Patch Changes
