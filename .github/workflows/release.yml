@@ -44,6 +44,8 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@nubrell'
           always-auth: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Authenticate with the GitHub Package Registry
         working-directory: lib-verniz-starter
@@ -88,7 +90,10 @@ jobs:
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: yarn changeset:publish
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          yarn changeset:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
