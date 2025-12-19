@@ -58,11 +58,11 @@ export const Destructive: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger className="px-4 py-2 bg-primary text-primary-foreground rounded">
-        Open Menu
+        Open Menusss
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        <DropdownMenuItem>Profilesss</DropdownMenuItem>
+        <DropdownMenuItem variant="destructive">Deletesss</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ),
