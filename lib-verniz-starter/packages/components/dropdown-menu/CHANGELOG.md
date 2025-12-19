@@ -1,5 +1,11 @@
 # @nubrell/dropdown-menu
 
+## 0.1.3
+
+### Patch Changes
+
+- 4dd6d09: teste2
+
 ## 0.1.2
 
 ### Patch Changes
