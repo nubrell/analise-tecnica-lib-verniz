@@ -83,7 +83,7 @@ const DropdownMenuItem = React.forwardRef<
       'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       inset && 'pl-8',
       variant === 'destructive' &&
-        'text-destructive focus:text-destructive focus:bg-destructive/10',
+      'text-destructive focus:text-destructive focus:bg-destructive/10',
       className
     )}
     {...props}
@@ -133,7 +133,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        {radioIcon || '●'}
+        {radioIcon || 's●'}
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
