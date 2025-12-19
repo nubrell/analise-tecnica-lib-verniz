@@ -129,6 +129,7 @@ Este projeto usa [Changesets](https://github.com/changesets/changesets) para ger
 ### Resumo Rápido
 
 **Fluxo com Changeset (recomendado):**
+
 1. Criar branch do componente
 2. Criar/editar componente
 3. Executar `yarn changeset`
@@ -138,6 +139,7 @@ Este projeto usa [Changesets](https://github.com/changesets/changesets) para ger
 7. Merge do Release PR → Pacotes são publicados automaticamente
 
 **Publicação Individual (rápida):**
+
 ```bash
 yarn publish:component nome-componente
 ```
