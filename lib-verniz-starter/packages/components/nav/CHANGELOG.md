@@ -1,5 +1,12 @@
 # @nubrell/nav
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [e073aef]
+  - @nubrell/dropdown-menu@0.2.0
+
 ## 1.0.1
 
 ### Patch Changes

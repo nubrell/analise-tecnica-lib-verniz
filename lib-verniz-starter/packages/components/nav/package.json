@@ -1,6 +1,6 @@
 {
   "name": "@nubrell/nav",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Nav component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -61,7 +61,7 @@
   "devDependencies": {
     "@nubrell/badge": "^0.0.2",
     "@nubrell/collapsible": "^0.0.2",
-    "@nubrell/dropdown-menu": "^0.1.1",
+    "@nubrell/dropdown-menu": "^0.2.0",
     "@storybook/react": "^7.6.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
