@@ -108,7 +108,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        {checkIcon || '✓'}
+        {checkIcon || '✓ss'}
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -133,7 +133,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        {radioIcon || '●'}
+        {radioIcon || '●ss'}
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
