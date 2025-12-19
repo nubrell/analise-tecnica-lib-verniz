@@ -1,12 +1,9 @@
-name: Release or Pull Request
+name: Release
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -16,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       packages: write
       id-token: write
 
@@ -39,6 +35,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Install Dependencies
+        working-directory: lib-verniz-starter
         run: yarn install --frozen-lockfile || yarn install
 
       - name: Setup NPM Registry
@@ -68,53 +65,30 @@ jobs:
 
       - name: Version packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
-        id: changesets-version
         working-directory: lib-verniz-starter
         run: |
           yarn changeset:version
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "chore(release): version packages"
-            git push origin HEAD:changeset-release/main --force || git push origin HEAD:changeset-release/main
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            git push origin main
           else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No version changes to commit"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release Pull Request
-        if: steps.changesets-version.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: changeset-release/main
-          base: main
-          title: 'chore(release): publish packages'
-          body: |
-            This PR was automatically created by changesets.
-            
-            ## Changes
-            - Version packages updated
-            - CHANGELOGs generated
-            
-            After merging this PR, packages will be published automatically.
-          delete-branch: false
-          draft: false
-
-      - name: Publish packages
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/main'
+      - name: Build packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: |
-          yarn build
-          yarn changeset:publish
+        run: yarn build
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Delete component branch after merge
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'changeset-release/main'
-        run: |
-          git push origin --delete ${{ github.event.pull_request.head.ref }} || echo "Branch already deleted or doesn't exist"
+      - name: Publish packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        working-directory: lib-verniz-starter
+        run: yarn changeset:publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
