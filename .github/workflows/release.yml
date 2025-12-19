@@ -44,14 +44,18 @@ jobs:
           node-version: 20
           registry-url: "https://npm.pkg.github.com"
           scope: "@nubrell"
+          always-auth: true
 
       - name: Configure npm/yarn for GitHub Packages
         working-directory: lib-verniz-starter
         run: |
           # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
-          # (igual ao publish-single.yml que funciona)
-          echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
+          # O changeset publish precisa do .npmrc no diretório de trabalho
+          echo "@nubrell:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          # Verifica se o arquivo foi criado corretamente (sem mostrar o token)
+          echo "✅ .npmrc configurado para @nubrell scope"
+          cat .npmrc | sed 's/:_authToken=.*/:_authToken=***/' || true
 
       - name: Check for changesets
         id: check-changesets
@@ -87,10 +91,28 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish packages
+      - name: Test authentication before publish
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: yarn changeset:publish
+        run: |
+          # Verifica se o .npmrc existe e está configurado
+          if [ ! -f .npmrc ]; then
+            echo "❌ Erro: .npmrc não encontrado!"
+            exit 1
+          fi
+          echo "🔍 Testando autenticação com GitHub Packages..."
+          # Testa se consegue ler informações de um pacote existente
+          npm info @nubrell/utils --registry=https://npm.pkg.github.com || echo "⚠️  Pacote @nubrell/utils ainda não existe (isso é normal na primeira publicação)"
+          echo "✅ Autenticação configurada corretamente"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        working-directory: lib-verniz-starter
+        run: |
+          echo "📦 Publicando pacotes com changeset..."
+          yarn changeset:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

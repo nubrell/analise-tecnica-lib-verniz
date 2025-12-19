@@ -6,6 +6,7 @@ Este guia documenta o processo completo para criar, desenvolver, buildar e publi
 
 ## 📋 Índice
 
+0. [Configurar Autenticação para GitHub Packages](#0-configurar-autenticação-para-github-packages)
 1. [Criar um Novo Componente](#1-criar-um-novo-componente)
    - [1.1. Criar Componente Web (Simples)](#11-criar-componente-web-simples)
    - [1.2. Criar Componente Compound (Composto)](#12-criar-componente-compound-composto)
@@ -19,6 +20,65 @@ Este guia documenta o processo completo para criar, desenvolver, buildar e publi
 
 ---
 
+## 0. Configurar Autenticação para GitHub Packages
+
+### ⚠️ Importante: Configuração Necessária para Publicar
+
+Para publicar pacotes no GitHub Packages usando `yarn changeset:publish`, você precisa configurar a autenticação localmente.
+
+### Passo 1: Obter um Personal Access Token do GitHub
+
+1. Acesse: https://github.com/settings/tokens
+2. Clique em **"Generate new token"** > **"Generate new token (classic)"**
+3. Dê um nome ao token (ex: `npm-publish-token`)
+4. Selecione as permissões necessárias:
+   - ✅ `write:packages` (para publicar pacotes)
+   - ✅ `read:packages` (para ler pacotes)
+   - ✅ `repo` (se o repositório for privado)
+5. Clique em **"Generate token"**
+6. **Copie o token imediatamente** (você não poderá vê-lo novamente!)
+
+### Passo 2: Configurar o arquivo `.npmrc`
+
+1. **Copie o arquivo de exemplo:**
+   ```bash
+   cd lib-verniz-starter
+   cp .npmrc.example .npmrc
+   ```
+
+2. **Edite o arquivo `.npmrc` e substitua `SEU_TOKEN_AQUI` pelo seu token:**
+   ```bash
+   # Abra o arquivo .npmrc em um editor
+   nano .npmrc
+   # ou
+   code .npmrc
+   ```
+
+3. **O arquivo deve ficar assim:**
+   ```
+   @nubrell:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=ghp_seu_token_aqui
+   ```
+
+### ✅ Verificar se está funcionando
+
+Após configurar, teste a autenticação:
+
+```bash
+# Verificar se consegue acessar os pacotes
+npm info @nubrell/dropdown-menu --registry=https://npm.pkg.github.com
+```
+
+Se não houver erro de autenticação, está configurado corretamente!
+
+### 🔒 Segurança
+
+- O arquivo `.npmrc` está no `.gitignore` e **NÃO será commitado**
+- **Nunca compartilhe seu token** ou o inclua em commits
+- Se o token for exposto, revogue-o imediatamente no GitHub
+
+---
+
 ## 1. Criar um Novo Componente
 
 ### Pré-requisitos
@@ -26,6 +86,7 @@ Este guia documenta o processo completo para criar, desenvolver, buildar e publi
 - Node.js 20 (ou superior)
 - Yarn 1.22.19
 - Estar na raiz do projeto `lib-verniz-starter`
+- **Autenticação configurada** (veja seção 0 acima)
 
 ### 1.1. Criar Componente Web (Simples)
 
@@ -394,6 +455,63 @@ O workflow `publish.yml` executa:
 ---
 
 ## 6. Troubleshooting
+
+### ❌ Erro: "E401 Unauthorized" ou "unauthenticated: User cannot be authenticated"
+
+**Causa:** Falta de autenticação configurada para o GitHub Packages.
+
+**Sintomas:**
+```
+🦋  error Received an unknown error code: E401 for npm info "@nubrell/dropdown-menu"
+🦋  error 401 Unauthorized - GET https://npm.pkg.github.com/@nubrell%2fdropdown-menu - unauthenticated: User cannot be authenticated with the token provided.
+```
+
+**Solução:**
+
+1. **Verifique se o arquivo `.npmrc` existe:**
+   ```bash
+   cd lib-verniz-starter
+   ls -la .npmrc
+   ```
+
+2. **Se não existir, crie a partir do exemplo:**
+   ```bash
+   cp .npmrc.example .npmrc
+   ```
+
+3. **Configure seu token do GitHub no arquivo `.npmrc`:**
+   ```bash
+   # Edite o arquivo .npmrc
+   nano .npmrc
+   # ou
+   code .npmrc
+   ```
+
+4. **O arquivo deve conter:**
+   ```
+   @nubrell:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=SEU_TOKEN_DO_GITHUB_AQUI
+   ```
+
+5. **Obter um token do GitHub (se ainda não tiver):**
+   - Acesse: https://github.com/settings/tokens
+   - Clique em "Generate new token" > "Generate new token (classic)"
+   - Dê um nome ao token
+   - Selecione as permissões: `write:packages`, `read:packages`, `repo` (se privado)
+   - Gere e copie o token
+   - Cole no arquivo `.npmrc` no lugar de `SEU_TOKEN_DO_GITHUB_AQUI`
+
+6. **Teste a autenticação:**
+   ```bash
+   npm info @nubrell/dropdown-menu --registry=https://npm.pkg.github.com
+   ```
+
+7. **Tente publicar novamente:**
+   ```bash
+   yarn changeset:publish
+   ```
+
+**Nota:** O arquivo `.npmrc` está no `.gitignore` e não será commitado. Cada desenvolvedor precisa configurar seu próprio token localmente.
 
 ### ❌ Erro: "Cannot find module '@nubrell/...'"
 
