@@ -92,7 +92,8 @@ jobs:
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
         run: |
-          # Garante que o token está no ~/.npmrc (para npm usado pelo changeset)
+          # Garante que o token e registry estão configurados no ~/.npmrc (para npm usado pelo changeset)
+          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
           yarn changeset:publish
         env:
