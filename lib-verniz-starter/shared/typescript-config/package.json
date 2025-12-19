@@ -1,7 +1,7 @@
 {
-  "name": "@verniz/typescript-config",
+  "name": "@nubrell/typescript-config",
   "version": "0.0.1",
-  "description": "Shared TypeScript configurations for Verniz",
+  "description": "Shared TypeScript configurations for Nubrell",
   "main": "index.js",
   "files": [
     "base.json",
