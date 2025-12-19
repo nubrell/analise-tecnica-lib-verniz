@@ -50,23 +50,59 @@ echo "🚀 Publicando @nubrell/$COMPONENT_NAME@$VERSION..."
 echo "📦 Versão detectada do package.json: $VERSION"
 echo "📝 Criando tag: $TAG_NAME"
 
-# Verifica se a tag já existe
+# Obtém o commit atual
+CURRENT_COMMIT=$(git rev-parse HEAD)
+
+# Verifica se a tag já existe localmente
 if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-  echo "⚠️  Tag $TAG_NAME já existe!"
-  read -p "Deseja fazer push mesmo assim? (s/N) " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Ss]$ ]]; then
-    echo "❌ Cancelado"
-    exit 1
+  TAG_COMMIT=$(git rev-parse "$TAG_NAME")
+  if [ "$TAG_COMMIT" != "$CURRENT_COMMIT" ]; then
+    echo "⚠️  Tag $TAG_NAME já existe localmente apontando para commit diferente!"
+    echo "   Tag atual aponta para: ${TAG_COMMIT:0:7}"
+    echo "   Commit atual: ${CURRENT_COMMIT:0:7}"
+    echo "🔄 Recriando tag apontando para o commit atual..."
+    # Deleta a tag local
+    git tag -d "$TAG_NAME" 2>/dev/null || true
+  else
+    echo "ℹ️  Tag $TAG_NAME já existe localmente e aponta para o commit atual."
   fi
-else
-  # Criar tag
+fi
+
+# Verifica se a tag existe remotamente
+TAG_EXISTS_REMOTE=false
+if git ls-remote --tags origin "$TAG_NAME" | grep -q "$TAG_NAME"; then
+  REMOTE_TAG_COMMIT=$(git ls-remote --tags origin "$TAG_NAME" | cut -f1)
+  if [ "$REMOTE_TAG_COMMIT" != "$CURRENT_COMMIT" ]; then
+    echo "⚠️  Tag $TAG_NAME já existe remotamente apontando para commit diferente!"
+    echo "   Tag remota aponta para: ${REMOTE_TAG_COMMIT:0:7}"
+    echo "   Commit atual: ${CURRENT_COMMIT:0:7}"
+    echo "🔄 A tag remota será atualizada para apontar para o commit atual."
+    TAG_EXISTS_REMOTE=true
+  else
+    echo "ℹ️  Tag $TAG_NAME já existe remotamente e aponta para o commit atual."
+    echo "⚠️  Se o workflow não foi acionado, pode ser cache. Tentando forçar atualização..."
+    TAG_EXISTS_REMOTE=true
+  fi
+fi
+
+# Criar tag apontando para o HEAD atual (se não existir)
+if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
   git tag "$TAG_NAME"
+  echo "✅ Tag criada localmente: $TAG_NAME"
+else
+  echo "✅ Tag local já existe e está correta: $TAG_NAME"
 fi
 
 # Push da tag (isso aciona o workflow automaticamente)
 echo "⬆️  Fazendo push da tag..."
-git push origin "$TAG_NAME"
+if [ "$TAG_EXISTS_REMOTE" = true ]; then
+  # Usa --force para atualizar a tag remota se já existir e apontar para commit diferente
+  git push origin "$TAG_NAME" --force
+  echo "✅ Tag remota atualizada com sucesso!"
+else
+  git push origin "$TAG_NAME"
+  echo "✅ Tag enviada com sucesso!"
+fi
 
 echo ""
 echo "✅ Tag criada e enviada! O workflow será acionado automaticamente."

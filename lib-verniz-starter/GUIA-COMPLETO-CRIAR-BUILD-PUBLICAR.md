@@ -445,21 +445,55 @@ ls -la dist/
 yarn build 2>&1 | tee build.log
 ```
 
-### ❌ Erro: "Tag already exists"
+### ❌ Tag já existe (local ou remota)
 
-**Causa:** A tag Git já existe localmente.
+**Causa:** A tag Git já existe localmente ou remotamente.
 
-**Solução:**
+**Solução Automática (Recomendada):**
+
+O script `publish.sh` agora trata isso automaticamente:
 
 ```bash
-# Opção 1: Deletar tag local e criar nova
-git tag -d nubrell/nome-do-componente@0.0.1
-git tag nubrell/nome-do-componente@0.0.2
-git push origin nubrell/nome-do-componente@0.0.2
+# Se você fez commit de mudanças após criar a tag, o script automaticamente:
+# 1. Verifica se a tag aponta para o commit correto
+# 2. Se não, recria a tag apontando para o commit atual
+# 3. Faz push forçado se necessário para atualizar a tag remota
+# 4. Aciona o workflow corretamente
 
-# Opção 2: Usar versão diferente
-git tag nubrell/nome-do-componente@0.0.2
-git push origin nubrell/nome-do-componente@0.0.2
+yarn publish:component nome-do-componente
+```
+
+**Cenário Comum:**
+
+1. Você tentou publicar sem fazer commit → erro no Actions
+2. Você fez commit das mudanças
+3. Você tenta publicar novamente com a mesma versão
+
+**O que o script faz agora:**
+- ✅ Detecta que a tag já existe
+- ✅ Verifica se a tag aponta para o commit atual
+- ✅ Se não, recria a tag apontando para o commit atual
+- ✅ Faz push forçado se necessário para atualizar a tag remota
+- ✅ Aciona o workflow corretamente
+
+**Solução Manual (se necessário):**
+
+```bash
+# Deletar tag local
+git tag -d nubrell/nome-do-componente@0.0.1
+
+# Criar tag apontando para o commit atual
+git tag nubrell/nome-do-componente@0.0.1
+
+# Fazer push forçado para atualizar a tag remota
+git push origin nubrell/nome-do-componente@0.0.1 --force
+
+# Ou se preferir atualizar a versão no package.json primeiro
+# Editar package.json: "version": "0.0.2"
+git add lib-verniz-starter/packages/components/nome-do-componente/package.json
+git commit -m "chore: bump version to 0.0.2"
+git push origin main
+yarn publish:component nome-do-componente
 ```
 
 ### ❌ Erro: "Cannot find module 'vitest'"
@@ -475,26 +509,53 @@ yarn install
 
 ### ❌ Workflow não é acionado ao fazer push da tag
 
-**Causa:** Tag não segue o padrão correto ou não foi feito push.
+**Causa:** Tag não segue o padrão correto, não foi feito push, ou tag aponta para commit antigo.
 
 **Solução:**
 
-1. Verifique o formato da tag:
+1. **Verifique o formato da tag:**
 
    - ✅ `nubrell/componente@0.0.1` (para publish-single)
    - ✅ `v1.0.0` (para publish all)
    - ❌ `componente@0.0.1` (faltando prefixo)
    - ❌ `nubrell-componente-0.0.1` (formato incorreto)
 
-2. Certifique-se de fazer push da tag:
+2. **Use o script automatizado (recomendado):**
 
    ```bash
-   git push origin nubrell/componente@0.0.1
+   # O script cuida de tudo automaticamente, incluindo recriar tags se necessário
+   yarn publish:component nome-do-componente
    ```
 
-3. Verifique se a tag foi criada remotamente:
+3. **Se usar manualmente, verifique se a tag aponta para o commit correto:**
+
+   ```bash
+   # Ver commit atual
+   git rev-parse HEAD
+   
+   # Ver commit da tag
+   git rev-parse nubrell/componente@0.0.1
+   
+   # Se forem diferentes, recrie a tag
+   git tag -d nubrell/componente@0.0.1
+   git tag nubrell/componente@0.0.1
+   git push origin nubrell/componente@0.0.1 --force
+   ```
+
+4. **Verifique se a tag foi criada remotamente:**
    ```bash
    git ls-remote --tags origin | grep nubrell/componente
+   ```
+
+5. **Importante:** Sempre faça commit das mudanças **antes** de publicar:
+   ```bash
+   # 1. Commit primeiro
+   git add lib-verniz-starter/packages/components/nome-componente
+   git commit -m "feat: atualiza componente"
+   git push origin main
+   
+   # 2. Depois publique
+   yarn publish:component nome-componente
    ```
 
 ### ❌ TypeScript não encontra tipos de dependências internas
