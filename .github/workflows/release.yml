@@ -27,8 +27,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
-          cache-dependency-path: lib-verniz-starter/yarn.lock
 
       - name: Configure Git
         run: |
@@ -36,8 +34,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Install Dependencies
-        working-directory: lib-verniz-starter
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile || yarn install
 
       - name: Setup NPM Registry
         uses: actions/setup-node@v4

@@ -8,5 +8,8 @@
     "lib-verniz-starter/packages/components/*",
     "lib-verniz-starter/apps/*",
     "lib-verniz-starter/shared/*"
-  ]
+  ],
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1"
+  }
 }
