@@ -44,12 +44,13 @@ jobs:
           node-version: 20
           registry-url: "https://npm.pkg.github.com"
           scope: "@nubrell"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure npm/yarn for GitHub Packages
         working-directory: lib-verniz-starter
         run: |
-          # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
-          echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
+          # O setup-node já configura o registry, só precisamos garantir o token no .npmrc local
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
       - name: Check for changesets
