@@ -40,113 +40,20 @@ jobs:
         working-directory: lib-verniz-starter
         run: yarn install --frozen-lockfile || yarn install
 
-      - name: Setup NPM Registry
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
           registry-url: "https://npm.pkg.github.com"
           scope: "@nubrell"
-          always-auth: true
-        env:
-          # Passa o token correto para o setup-node criar o .npmrc
-          # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Configure npm/yarn for GitHub Packages
         working-directory: lib-verniz-starter
-        env:
-          # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
-          # O GITHUB_TOKEN padrão pode não ter permissões suficientes para GitHub Packages
-          # Recomendado: criar um PAT com permissões write:packages e read:packages
-          # e adicionar como secret NPM_PUBLISH_TOKEN
-          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Debug: verifica se os secrets estão disponíveis (sem mostrar valores)
-          echo "🔍 Verificando secrets disponíveis..."
-          if [ -n "$PAT_TOKEN" ]; then
-            PAT_LENGTH=${#PAT_TOKEN}
-            echo "✅ NPM_PUBLISH_TOKEN encontrado (tamanho: ${PAT_LENGTH} caracteres)"
-            AUTH_TOKEN="$PAT_TOKEN"
-            # Verifica se o token começa com 'ghp_' (formato de PAT)
-            if [[ "$PAT_TOKEN" == ghp_* ]]; then
-              echo "✅ Token tem formato correto (PAT - ghp_...)"
-            else
-              echo "⚠️  Token não começa com 'ghp_' - verifique se é um PAT válido"
-            fi
-          else
-            DEFAULT_LENGTH=${#DEFAULT_TOKEN}
-            echo "❌ NPM_PUBLISH_TOKEN NÃO encontrado!"
-            echo "⚠️  Usando GITHUB_TOKEN padrão (tamanho: ${DEFAULT_LENGTH} caracteres)"
-            echo "⚠️  GITHUB_TOKEN NÃO tem permissões para GitHub Packages"
-            AUTH_TOKEN="$DEFAULT_TOKEN"
-            echo ""
-            echo "📋 Para resolver:"
-            echo "1. Crie um Personal Access Token (PAT) em: https://github.com/settings/tokens"
-            echo "2. Permissões necessárias: write:packages, read:packages, repo"
-            echo "3. Adicione como secret NPM_PUBLISH_TOKEN no repositório"
-            echo "4. O workflow falhará com E401 até que o PAT seja configurado"
-            echo ""
-            echo "⚠️  Continuando com GITHUB_TOKEN (provavelmente vai falhar)..."
-          fi
-
-          # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
-          # O changeset publish precisa do .npmrc no diretório de trabalho
-          # IMPORTANTE: Criar o arquivo do zero para evitar conflitos
-          cat > .npmrc << EOF
-          @nubrell:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${AUTH_TOKEN}
-          EOF
-
-          # Também cria no home para garantir que seja encontrado
-          mkdir -p ~
-          cat > ~/.npmrc << EOF
-          @nubrell:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${AUTH_TOKEN}
-          EOF
-
-          # Verifica se o arquivo foi criado corretamente (sem mostrar o token)
-          echo "✅ .npmrc configurado para @nubrell scope (local e home)"
-          if [ -f .npmrc ]; then
-            echo "📄 Conteúdo do .npmrc local (token mascarado):"
-            cat .npmrc | sed 's/:_authToken=.*/:_authToken=***/' || true
-            echo ""
-            echo "🔍 Verificando se o token está correto (primeiros 4 caracteres):"
-            TOKEN_PREFIX=$(grep "_authToken" .npmrc | cut -d'=' -f2 | cut -c1-4)
-            if [ -n "$TOKEN_PREFIX" ]; then
-              echo "✅ Token encontrado (prefixo: ${TOKEN_PREFIX}...)"
-            else
-              echo "❌ Token NÃO encontrado no .npmrc!"
-              exit 1
-            fi
-          else
-            echo "❌ Erro: .npmrc não foi criado!"
-            exit 1
-          fi
-
-          if [ -f ~/.npmrc ]; then
-            echo "📄 .npmrc no home também criado"
-            echo "📄 Conteúdo do ~/.npmrc (token mascarado):"
-            cat ~/.npmrc | sed 's/:_authToken=.*/:_authToken=***/' || true
-          fi
-
-          # Debug: mostra qual token está sendo usado
-          if [ -n "$PAT_TOKEN" ]; then
-            echo "✅ Usando PAT (NPM_PUBLISH_TOKEN)"
-            echo "🧪 Testando autenticação do PAT com GitHub API..."
-            # Testa se o token tem permissões básicas fazendo uma chamada à API do GitHub
-            API_RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: token ${AUTH_TOKEN}" https://api.github.com/user 2>&1)
-            HTTP_CODE=$(echo "$API_RESPONSE" | tail -n1)
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Token válido e autenticado na API do GitHub"
-            else
-              echo "⚠️  Token retornou código HTTP $HTTP_CODE - pode não ter permissões corretas"
-              echo "💡 Verifique se o PAT tem as permissões: write:packages, read:packages, repo"
-            fi
-          else
-            echo "⚠️  Usando GITHUB_TOKEN padrão - pode não ter permissões suficientes"
-            echo "💡 Crie um PAT e adicione como secret NPM_PUBLISH_TOKEN"
-          fi
+          # Cria .npmrc para yarn usar o token do GitHub Packages
+          # Usa NPM_PUBLISH_TOKEN se disponível, caso contrário usa GITHUB_TOKEN
+          echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN || secrets.GITHUB_TOKEN }}" >> .npmrc
 
       - name: Check for changesets
         id: check-changesets
@@ -178,75 +85,11 @@ jobs:
       - name: Build packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        env:
-          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
-          export NODE_AUTH_TOKEN="${PAT_TOKEN:-$DEFAULT_TOKEN}"
-
-          yarn turbo run build --filter='@nubrell/*'
-
-      - name: Test authentication before publish
-        if: steps.check-changesets.outputs.has_changesets == 'true'
-        working-directory: lib-verniz-starter
-        env:
-          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Garante que o npm use o .npmrc do diretório atual
-          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/lib-verniz-starter/.npmrc
-        run: |
-          # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
-          export NODE_AUTH_TOKEN="${PAT_TOKEN:-$DEFAULT_TOKEN}"
-
-          # Verifica se o .npmrc existe e está configurado
-          if [ ! -f .npmrc ]; then
-            echo "❌ Erro: .npmrc não encontrado!"
-            exit 1
-          fi
-          echo "🔍 Testando autenticação com GitHub Packages..."
-          echo "📄 Verificando .npmrc no diretório atual:"
-          pwd
-          ls -la .npmrc || echo "⚠️  .npmrc não encontrado no diretório atual"
-
-          # Testa se consegue ler informações de um pacote existente
-          # Usa o .npmrc do diretório atual explicitamente
-          echo "🧪 Testando npm info com .npmrc local..."
-          npm info @nubrell/utils 2>&1 || echo "⚠️  Pacote @nubrell/utils ainda não existe (isso é normal na primeira publicação)"
-
-          # Verifica se o token está sendo usado
-          echo "🔑 Verificando se o token está configurado..."
-          if grep -q "_authToken" .npmrc; then
-            echo "✅ Token encontrado no .npmrc"
-          else
-            echo "❌ Token NÃO encontrado no .npmrc!"
-            exit 1
-          fi
+        run: yarn turbo run build --filter='@nubrell/*'
 
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
+        run: yarn changeset:publish
         env:
-          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Força o npm/yarn a usar o .npmrc do diretório de trabalho
-          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/lib-verniz-starter/.npmrc
-          # Garante que o yarn também use o .npmrc correto
-          YARN_NPM_REGISTRY_SERVER: https://npm.pkg.github.com
-        run: |
-          # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
-          export NODE_AUTH_TOKEN="${PAT_TOKEN:-$DEFAULT_TOKEN}"
-
-          # Verifica novamente se o .npmrc existe
-          if [ ! -f .npmrc ]; then
-            echo "❌ Erro: .npmrc não encontrado antes de publicar!"
-            exit 1
-          fi
-
-          echo "📦 Publicando pacotes com changeset..."
-          echo "📄 Usando .npmrc do diretório: $(pwd)/.npmrc"
-
-          # Garante que o yarn/npm use o .npmrc do diretório atual
-          # O changeset publish usa npm/yarn internamente
-          yarn changeset:publish
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN || secrets.GITHUB_TOKEN }}
