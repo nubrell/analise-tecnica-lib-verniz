@@ -1,5 +1,11 @@
 # @nubrell/dropdown-menu
 
+## 0.1.2
+
+### Patch Changes
+
+- de29d2d: teste final
+
 ## 0.1.1
 
 ### Patch Changes
