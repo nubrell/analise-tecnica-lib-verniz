@@ -63,3 +63,5 @@ storybook-static/
 *.key
 *.cert
 
+.npmrc
+lib-verniz-starter/.npmrc
