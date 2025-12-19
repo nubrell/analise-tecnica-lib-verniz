@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+      - closed
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -51,11 +54,24 @@ jobs:
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
+      - name: Check for changesets
+        id: check-changesets
+        working-directory: lib-verniz-starter
+        run: |
+          if [ -z "$(find .changeset -name '*.md' -not -name 'README.md' 2>/dev/null)" ]; then
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+            echo "No changesets found"
+          else
+            echo "has_changesets=true" >> $GITHUB_OUTPUT
+            echo "Changesets found"
+          fi
+
       - name: Version packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
         id: changesets-version
         working-directory: lib-verniz-starter
         run: |
-          yarn changeset:version || exit 0
+          yarn changeset:version
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "chore(release): version packages"
@@ -87,9 +103,18 @@ jobs:
           draft: false
 
       - name: Publish packages
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/main'
         working-directory: lib-verniz-starter
-        run: yarn publish-packages
+        run: |
+          yarn build
+          yarn changeset:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete component branch after merge
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'changeset-release/main'
+        run: |
+          git push origin --delete ${{ github.event.pull_request.head.ref }} || echo "Branch already deleted or doesn't exist"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
