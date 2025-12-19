@@ -54,19 +54,19 @@ jobs:
           # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
           # O GITHUB_TOKEN padrão pode não ter permissões suficientes para GitHub Packages
           # Recomendado: criar um PAT com permissões write:packages e read:packages
-          # e adicionar como secret GITHUB_PACKAGES_TOKEN
-          PAT_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+          # e adicionar como secret NPM_PUBLISH_TOKEN
+          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Seleciona o token a ser usado (PAT tem prioridade)
           if [ -n "$PAT_TOKEN" ]; then
             AUTH_TOKEN="$PAT_TOKEN"
-            echo "✅ Usando GITHUB_PACKAGES_TOKEN (PAT)"
+            echo "✅ Usando NPM_PUBLISH_TOKEN (PAT)"
           else
             AUTH_TOKEN="$DEFAULT_TOKEN"
             echo "⚠️  Usando GITHUB_TOKEN padrão (pode não ter permissões suficientes)"
-            echo "💡 Recomendado: criar um PAT e adicionar como secret GITHUB_PACKAGES_TOKEN"
-            echo "📖 Veja: .github/SETUP-PAT.md para instruções"
+            echo "💡 Recomendado: criar um PAT com permissões write:packages e read:packages"
+            echo "💡 Adicionar como secret NPM_PUBLISH_TOKEN no repositório"
           fi
           
           # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
@@ -129,7 +129,7 @@ jobs:
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
         env:
-          PAT_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Usa PAT se disponível, caso contrário usa GITHUB_TOKEN
@@ -165,7 +165,7 @@ jobs:
             exit 1
           fi
         env:
-          PAT_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Garante que o npm use o .npmrc do diretório atual
           NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/lib-verniz-starter/.npmrc
@@ -214,7 +214,7 @@ jobs:
           # O changeset publish usa npm/yarn internamente
           yarn changeset:publish
         env:
-          PAT_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+          PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Força o npm/yarn a usar o .npmrc do diretório de trabalho
