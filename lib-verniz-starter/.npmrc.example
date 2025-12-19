@@ -1,0 +1,24 @@
+# Configuração de autenticação para GitHub Packages
+# 
+# INSTRUÇÕES:
+# 1. Copie este arquivo para .npmrc: cp .npmrc.example .npmrc
+# 2. Substitua SEU_TOKEN_AQUI pelo seu Personal Access Token do GitHub
+# 3. O token precisa ter a permissão 'write:packages' e 'read:packages'
+#
+# Como obter um token:
+# 1. Acesse: https://github.com/settings/tokens
+# 2. Clique em "Generate new token" > "Generate new token (classic)"
+# 3. Dê um nome ao token (ex: "npm-publish-token")
+# 4. Selecione as permissões:
+#    - write:packages (para publicar pacotes)
+#    - read:packages (para ler pacotes)
+#    - repo (se o repositório for privado)
+# 5. Clique em "Generate token"
+# 6. Copie o token e cole no lugar de SEU_TOKEN_AQUI abaixo
+#
+# IMPORTANTE: O arquivo .npmrc está no .gitignore e NÃO será commitado
+# Mantenha seu token seguro e nunca o compartilhe!
+
+@nubrell:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=SEU_TOKEN_AQUI
+
