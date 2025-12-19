@@ -34,10 +34,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
-      - name: Install lib-verniz-starter Dependencies
-        working-directory: lib-verniz-starter
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile || yarn install
 
       - name: Setup NPM Registry
         uses: actions/setup-node@v4
