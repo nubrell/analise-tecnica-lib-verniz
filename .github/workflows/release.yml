@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+      - closed
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -51,15 +54,67 @@ jobs:
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
-      - name: Create Release Pull Request or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: cd lib-verniz-starter && yarn publish-packages
-          title: 'chore(release): publish packages'
-          commit: 'chore(release): publish packages'
+      - name: Check for changesets
+        id: check-changesets
+        working-directory: lib-verniz-starter
+        run: |
+          if [ -z "$(find .changeset -name '*.md' -not -name 'README.md' 2>/dev/null)" ]; then
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+            echo "No changesets found"
+          else
+            echo "has_changesets=true" >> $GITHUB_OUTPUT
+            echo "Changesets found"
+          fi
+
+      - name: Version packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        id: changesets-version
+        working-directory: lib-verniz-starter
+        run: |
+          yarn changeset:version
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "chore(release): version packages"
+            git push origin HEAD:changeset-release/main --force || git push origin HEAD:changeset-release/main
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Pull Request
+        if: steps.changesets-version.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: changeset-release/main
+          base: main
+          title: 'chore(release): publish packages'
+          body: |
+            This PR was automatically created by changesets.
+            
+            ## Changes
+            - Version packages updated
+            - CHANGELOGs generated
+            
+            After merging this PR, packages will be published automatically.
+          delete-branch: false
+          draft: false
+
+      - name: Publish packages
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/main'
+        working-directory: lib-verniz-starter
+        run: |
+          yarn build
+          yarn changeset:publish
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: '0'
+
+      - name: Delete component branch after merge
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.ref != 'changeset-release/main'
+        run: |
+          git push origin --delete ${{ github.event.pull_request.head.ref }} || echo "Branch already deleted or doesn't exist"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
