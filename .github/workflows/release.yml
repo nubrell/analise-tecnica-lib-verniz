@@ -51,15 +51,45 @@ jobs:
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
-      - name: Create Release Pull Request or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: cd lib-verniz-starter && yarn publish-packages
-          title: 'chore(release): publish packages'
-          commit: 'chore(release): publish packages'
+      - name: Version packages
+        id: changesets-version
+        working-directory: lib-verniz-starter
+        run: |
+          yarn changeset:version || exit 0
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "chore(release): version packages"
+            git push origin HEAD:changeset-release/main --force || git push origin HEAD:changeset-release/main
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Pull Request
+        if: steps.changesets-version.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: changeset-release/main
+          base: main
+          title: 'chore(release): publish packages'
+          body: |
+            This PR was automatically created by changesets.
+            
+            ## Changes
+            - Version packages updated
+            - CHANGELOGs generated
+            
+            After merging this PR, packages will be published automatically.
+          delete-branch: false
+          draft: false
+
+      - name: Publish packages
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        working-directory: lib-verniz-starter
+        run: yarn publish-packages
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: '0'
 
