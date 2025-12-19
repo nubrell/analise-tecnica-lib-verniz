@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
+          cache-dependency-path: lib-verniz-starter/yarn.lock
 
       - name: Configure Git
         run: |
