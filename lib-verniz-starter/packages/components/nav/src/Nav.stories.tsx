@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Nav } from './Nav';
+import { Nav } from './Nav/Nav';
 import { Home, Settings, Users, FileText, ChevronDown } from 'lucide-react';
 
 const meta: Meta<typeof Nav> = {
