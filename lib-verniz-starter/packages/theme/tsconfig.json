@@ -1,5 +1,5 @@
 {
-  "extends": "@verniz/typescript-config/base.json",
+  "extends": "@nubrell/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"

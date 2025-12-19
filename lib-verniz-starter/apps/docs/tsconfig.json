@@ -1,10 +1,10 @@
 {
-  "extends": "@verniz/typescript-config/react-library.json",
+  "extends": "@nubrell/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@verniz/utils": ["../../packages/utils/src"],
-      "@verniz/theme": ["../../packages/theme/src"]
+      "@nubrell/utils": ["../../packages/utils/src"],
+      "@nubrell/theme": ["../../packages/theme/src"]
     }
   },
   "include": [".storybook/**/*", "src/**/*"],

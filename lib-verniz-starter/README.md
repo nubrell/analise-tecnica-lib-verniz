@@ -85,17 +85,13 @@ yarn component              # Gerar novo componente usando Hygen
 
 ## 📦 Pacotes
 
-### @verniz/utils
+### @nubrell/utils
 
 Utilitários compartilhados, incluindo a função `cn()` para merge de classes Tailwind.
 
-### @verniz/theme
+### @nubrell/theme
 
 Design tokens e configuração do tema Tailwind CSS.
-
-### @verniz/button
-
-Componente Button de exemplo com variantes e tamanhos.
 
 ## 🎨 Criando Novos Componentes
 

@@ -1,6 +1,6 @@
 {
   "name": "@nubrell/dropdown-menu",
-  "version": "0.1.5",
+  "version": "0.0.2",
   "description": "DropdownMenu component",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -70,3 +70,4 @@
     "vitest": "^1.1.0"
   }
 }
+

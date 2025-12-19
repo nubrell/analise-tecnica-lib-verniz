@@ -23,9 +23,8 @@ const config: StorybookConfig = {
     return mergeConfig(config, {
       resolve: {
         alias: {
-          '@verniz/utils': path.resolve(__dirname, '../../../packages/utils/src'),
-          '@verniz/theme': path.resolve(__dirname, '../../../packages/theme/src'),
-          '@verniz/button': path.resolve(__dirname, '../../../packages/components/button/src'),
+          '@nubrell/utils': path.resolve(__dirname, '../../../packages/utils/src'),
+          '@nubrell/theme': path.resolve(__dirname, '../../../packages/theme/src'),
           '@nubrell/badge': path.resolve(__dirname, '../../../packages/components/badge/src'),
           '@nubrell/avatar': path.resolve(__dirname, '../../../packages/components/avatar/src'),
           '@nubrell/collapsible': path.resolve(__dirname, '../../../packages/components/collapsible/src'),

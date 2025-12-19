@@ -1,7 +1,7 @@
 {
-  "name": "@verniz/eslint-config",
+  "name": "@nubrell/eslint-config",
   "version": "0.0.1",
-  "description": "Shared ESLint configurations for Verniz",
+  "description": "Shared ESLint configurations for Nubrell",
   "main": "index.js",
   "files": [
     "base.js",

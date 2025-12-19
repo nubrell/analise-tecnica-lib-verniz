@@ -1,7 +1,7 @@
 {
-  "name": "@verniz/theme",
+  "name": "@nubrell/theme",
   "version": "0.0.1",
-  "description": "Design tokens and theme for Verniz component library",
+  "description": "Design tokens and theme for Nubrell component library",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
