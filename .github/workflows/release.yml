@@ -46,15 +46,9 @@ jobs:
           scope: "@nubrell"
 
       - name: Configure npm/yarn for GitHub Packages
-        run: |
-          # Configura ~/.npmrc globalmente (para npm usado pelo changeset publish)
-          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          
-      - name: Configure local .npmrc
         working-directory: lib-verniz-starter
         run: |
-          # Cria .npmrc local para yarn usar o token do GitHub Packages
+          # Cria .npmrc local para yarn e npm usar o token do GitHub Packages
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
