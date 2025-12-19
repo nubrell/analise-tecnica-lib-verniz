@@ -21,6 +21,7 @@ git checkout -b chore/dropdown-menu-update
 ```
 
 **Convenção de nomes de branch:**
+
 - `feat/` - Nova feature/componente
 - `fix/` - Correção de bug
 - `chore/` - Atualização/manutenção
@@ -54,12 +55,15 @@ yarn changeset
 ```
 
 **Processo interativo:**
+
 1. **Seleciona os pacotes afetados:**
+
    - Use **espaço** para marcar/desmarcar
    - **Enter** para confirmar
    - Você verá `@nubrell/dropdown-menu` na lista (se tiver mudanças detectadas)
 
 2. **Define o tipo de versão:**
+
    - `patch` - Bug fix, correção pequena (0.0.1 → 0.0.2)
    - `minor` - Nova feature retrocompatível (0.0.1 → 0.1.0)
    - `major` - Breaking change (0.0.1 → 1.0.0)
@@ -86,6 +90,7 @@ git commit -m "fix: corrige ícone de radio no DropdownMenu"
 ```
 
 **Ou tudo de uma vez:**
+
 ```bash
 git add lib-verniz-starter/
 git commit -m "fix: corrige ícone de radio no DropdownMenu"
@@ -106,6 +111,7 @@ git push origin feat/dropdown-menu-fixes
 ```
 
 **Ou use o GitHub CLI:**
+
 ```bash
 gh pr create --base main --head feat/dropdown-menu-fixes --title "fix: corrige ícone de radio no DropdownMenu" --body "Corrige o ícone de radio no componente DropdownMenu"
 ```
@@ -115,6 +121,7 @@ gh pr create --base main --head feat/dropdown-menu-fixes --title "fix: corrige �
 ### 6. Revisar e Aprovar PR
 
 1. **Revisar o PR no GitHub:**
+
    - Verifique as mudanças
    - Verifique se o changeset está incluído
    - Peça review se necessário
@@ -220,4 +227,3 @@ git diff main --name-only
 ---
 
 Este fluxo garante versionamento semântico, CHANGELOGs automáticos e publicação coordenada de pacotes! 🚀
-
