@@ -121,26 +121,26 @@ Execute `yarn dev` para abrir o Storybook e ver a documentação interativa dos 
 
 Este projeto usa [Changesets](https://github.com/changesets/changesets) para gerenciamento de versões e GitHub Actions para publicar packages.
 
-### Publicação Automática via GitHub Actions
+### Documentação de Publicação
 
-Os packages são publicados automaticamente para o GitHub Packages (organização `@nubrell`) usando GitHub Actions:
+- **[FLUXO-COMPLETO-CHANGESET.md](./FLUXO-COMPLETO-CHANGESET.md)**: Fluxo completo com Changeset (recomendado)
+- **[GUIA-COMPLETO-CRIAR-BUILD-PUBLICAR.md](./GUIA-COMPLETO-CRIAR-BUILD-PUBLICAR.md)**: Guia para publicação individual de componentes
 
-1. **Publicação Automática**: Ao fazer push na branch `main`, todos os packages são publicados
-2. **Publicação Manual de um Package**: 
-   - Vá para Actions → "Publish Single Package"
-   - Clique em "Run workflow"
-   - Informe o caminho do package (ex: `packages/components/button`)
-   - Clique em "Run workflow"
+### Resumo Rápido
 
-### Publicação Manual Local
+**Fluxo com Changeset (recomendado):**
+1. Criar branch do componente
+2. Criar/editar componente
+3. Executar `yarn changeset`
+4. Commit do componente + changeset
+5. Criar PR para `main`
+6. Merge do PR → Workflow cria Release PR automaticamente
+7. Merge do Release PR → Pacotes são publicados automaticamente
 
-Para publicar manualmente localmente:
-
-1. Incremente a versão no `package.json` do componente
-2. Faça build: `yarn build` (ou dentro do package: `cd packages/components/button && yarn build`)
-3. Publique: `cd packages/components/button && npm publish`
-
-**Nota**: Para publicação local, você precisa configurar um token do GitHub no `.npmrc`. Para publicação via GitHub Actions, o `GITHUB_TOKEN` é usado automaticamente.
+**Publicação Individual (rápida):**
+```bash
+yarn publish:component nome-componente
+```
 
 ## 🏗️ Stack Tecnológica
 
