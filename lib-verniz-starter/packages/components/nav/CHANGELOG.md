@@ -1,5 +1,26 @@
 # @nubrell/nav
 
+## 1.0.0
+
+### Minor Changes
+
+- 612f708: Teste
+
+### Patch Changes
+
+- abe649d: Teste
+- 15b90c2: teste
+- 67d872a: teste
+- 47d8c0c: teste
+- 4e8ca64: teste2
+- Updated dependencies [abe649d]
+- Updated dependencies [612f708]
+- Updated dependencies [15b90c2]
+- Updated dependencies [67d872a]
+- Updated dependencies [47d8c0c]
+- Updated dependencies [4e8ca64]
+  - @nubrell/dropdown-menu@0.1.0
+
 ## 1.0.5
 
 ### Patch Changes
