@@ -44,13 +44,17 @@ jobs:
           node-version: 20
           registry-url: "https://npm.pkg.github.com"
           scope: "@nubrell"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure npm/yarn for GitHub Packages
+        run: |
+          # Configura ~/.npmrc globalmente (para npm usado pelo changeset publish)
+          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          
+      - name: Configure local .npmrc
         working-directory: lib-verniz-starter
         run: |
-          # Cria .npmrc para yarn usar o token do GitHub Packages
+          # Cria .npmrc local para yarn usar o token do GitHub Packages
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
@@ -91,36 +95,7 @@ jobs:
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: |
-          # Debug: Verifica o conteúdo do ~/.npmrc antes
-          echo "=== DEBUG: ~/.npmrc antes ==="
-          cat ~/.npmrc || echo "~/.npmrc não existe ainda"
-          echo ""
-          
-          # Debug: Verifica se NODE_AUTH_TOKEN está definido
-          echo "=== DEBUG: NODE_AUTH_TOKEN ==="
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "❌ NODE_AUTH_TOKEN está vazio!"
-          else
-            echo "✅ NODE_AUTH_TOKEN está definido (primeiros 10 chars: ${NODE_AUTH_TOKEN:0:10}...)"
-          fi
-          echo ""
-          
-          # Garante que o token e registry estão configurados no ~/.npmrc (para npm usado pelo changeset)
-          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          
-          # Debug: Verifica o conteúdo do ~/.npmrc depois
-          echo "=== DEBUG: ~/.npmrc depois ==="
-          cat ~/.npmrc
-          echo ""
-          
-          # Debug: Testa npm info antes de publish
-          echo "=== DEBUG: Testando npm info ==="
-          npm info @nubrell/utils --registry=https://npm.pkg.github.com || echo "npm info falhou"
-          echo ""
-          
-          yarn changeset:publish
+        run: yarn changeset:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
