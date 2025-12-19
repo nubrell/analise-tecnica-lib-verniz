@@ -44,13 +44,17 @@ jobs:
           node-version: 20
           registry-url: "https://npm.pkg.github.com"
           scope: "@nubrell"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure npm/yarn for GitHub Packages
+        run: |
+          # Configura ~/.npmrc globalmente (para npm usado pelo changeset publish)
+          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          
+      - name: Configure local .npmrc
         working-directory: lib-verniz-starter
         run: |
-          # Cria .npmrc para yarn usar o token do GitHub Packages
+          # Cria .npmrc local para yarn usar o token do GitHub Packages
           echo "@nubrell:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
@@ -91,11 +95,7 @@ jobs:
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: |
-          # Garante que o token e registry estão configurados no ~/.npmrc (para npm usado pelo changeset)
-          echo "@nubrell:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          yarn changeset:publish
+        run: yarn changeset:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
