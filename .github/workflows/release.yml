@@ -140,30 +140,6 @@ jobs:
       - name: Test authentication before publish
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: |
-          # Verifica se o .npmrc existe e está configurado
-          if [ ! -f .npmrc ]; then
-            echo "❌ Erro: .npmrc não encontrado!"
-            exit 1
-          fi
-          echo "🔍 Testando autenticação com GitHub Packages..."
-          echo "📄 Verificando .npmrc no diretório atual:"
-          pwd
-          ls -la .npmrc || echo "⚠️  .npmrc não encontrado no diretório atual"
-          
-          # Testa se consegue ler informações de um pacote existente
-          # Usa o .npmrc do diretório atual explicitamente
-          echo "🧪 Testando npm info com .npmrc local..."
-          npm info @nubrell/utils 2>&1 || echo "⚠️  Pacote @nubrell/utils ainda não existe (isso é normal na primeira publicação)"
-          
-          # Verifica se o token está sendo usado
-          echo "🔑 Verificando se o token está configurado..."
-          if grep -q "_authToken" .npmrc; then
-            echo "✅ Token encontrado no .npmrc"
-          else
-            echo "❌ Token NÃO encontrado no .npmrc!"
-            exit 1
-          fi
         env:
           PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -200,19 +176,6 @@ jobs:
       - name: Publish packages
         if: steps.check-changesets.outputs.has_changesets == 'true'
         working-directory: lib-verniz-starter
-        run: |
-          # Verifica novamente se o .npmrc existe
-          if [ ! -f .npmrc ]; then
-            echo "❌ Erro: .npmrc não encontrado antes de publicar!"
-            exit 1
-          fi
-          
-          echo "📦 Publicando pacotes com changeset..."
-          echo "📄 Usando .npmrc do diretório: $(pwd)/.npmrc"
-          
-          # Garante que o yarn/npm use o .npmrc do diretório atual
-          # O changeset publish usa npm/yarn internamente
-          yarn changeset:publish
         env:
           PAT_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
