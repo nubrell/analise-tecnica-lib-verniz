@@ -13,6 +13,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       exclude: ['node_modules/', '**/*.stories.*', 'src/test-setup.ts'],
+      thresholds: {
+        lines: 60,
+        functions: 60,
+        branches: 60,
+        statements: 60,
+      },
     },
   },
 });
